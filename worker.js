@@ -178,7 +178,7 @@ export default {
 </div>
 <div class="footer">
     از طرف <a id="sulgx-link" href="https://github.com/SulgX" target="_blank">SulgX</a> برای مردم ایران
-    <a id="readme-link" href="#" target="_blank">📖 README</a>
+    <a id="readme-link" href="https://github.com/SulgX/ConfigGenerator/tree/main" target="_blank">📖 README</a>
 </div>
 <div id="qrModal" class="qr-modal"><div class="modal-content"><canvas id="qrCanvas"></canvas><br><button class="btn btn-primary" id="closeQrBtn">Close</button><button class="btn btn-outline" id="retryQrBtn" style="display:none;">Retry</button></div></div>
 <div id="notification" class="notification" style="display:none;"></div>
