@@ -81,19 +81,10 @@
         .progress-bar { width: 100%; background: var(--border); border-radius: 4px; height: 6px; margin: 8px 0; }
         .progress-fill { height: 100%; width: 0; background: var(--accent); border-radius: 4px; transition: width 0.2s; }
 
-        /* Blinking gold link */
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-        #sulgx-link {
-            animation: blink 1.2s infinite;
-            font-weight: bold;
-        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        #sulgx-link { animation: blink 1.2s infinite; font-weight: bold; }
         #readme-link { margin-left: 15px; color: var(--text); }
         #readme-link:hover { color: var(--accent); }
-
-        /* LTR for English content */
         input.ltr, textarea.ltr, select.ltr { direction: ltr; text-align: left; }
     </style>
 </head>
@@ -104,12 +95,14 @@
         <div class="subtitle">Xray · V2Ray · Sing‑box – VLESS / VMess / Trojan / Shadowsocks</div>
     </div>
     <div class="container">
+        <!-- Import -->
         <div class="panel">
             <h2>📥 Import Link(s) – one per line</h2>
             <textarea id="importLink" class="ltr" placeholder="vless://...&#10;trojan://..."></textarea>
             <div style="margin-top:10px;"><button class="btn btn-primary" id="importBtn">🔍 Parse & Apply</button><button class="btn btn-outline" id="clearImportBtn">🗑️ Clear</button></div>
         </div>
         <div class="grid2col">
+            <!-- General -->
             <div class="panel">
                 <h2>⚙️ General</h2>
                 <div class="row" style="margin-bottom:12px;">
@@ -121,8 +114,10 @@
                     <div><label>Network</label><select id="network"><option value="tcp">TCP</option><option value="ws">WebSocket</option><option value="grpc">gRPC</option><option value="h2">HTTP/2</option><option value="kcp">mKCP</option><option value="quic">QUIC</option><option value="httpupgrade">HTTP Upgrade</option><option value="splithttp">SplitHTTP</option><option value="xhttp">XHTTP</option></select></div>
                     <div><label>Security</label><select id="security"><option value="none">None</option><option value="tls">TLS</option><option value="reality">Reality</option></select></div>
                 </div>
+                <!-- TLS / Reality fields -->
                 <div id="tlsRealityFields" style="display:none;"><div class="row"><div><label>SNI</label><input id="sni" class="ltr" placeholder="example.com"></div><div><label>Fingerprint</label><select id="fingerprint" class="ltr"><option value="chrome">Chrome</option><option value="firefox">Firefox</option><option value="safari">Safari</option><option value="ios">iOS</option><option value="android">Android</option><option value="edge">Edge</option><option value="random">Random</option><option value="randomized">Randomized</option></select></div><div><label>ALPN</label><input id="alpn" class="ltr" value="h2,http/1.1"></div></div></div>
                 <div id="realityOnlyFields" style="display:none;"><div class="row"><div><label>Public Key</label><input id="publicKey" class="ltr"></div><div><label>Short ID</label><input id="shortId" class="ltr"></div><div><label>Spider X</label><input id="spiderX" class="ltr" value="/"></div></div></div>
+                <!-- Transport fields -->
                 <div id="wsFields" style="display:none;"><div class="row"><div><label>Path</label><input id="wsPath" class="ltr" value="/ws"></div><div><label>Host</label><input id="wsHost" class="ltr" placeholder="example.com"></div></div></div>
                 <div id="grpcFields" style="display:none;"><div class="row"><div><label>Service Name</label><input id="grpcServiceName" class="ltr" value="GunService"></div><div><label>Mode</label><select id="grpcMultiMode" class="ltr"><option value="gun">gun</option><option value="multi">multi</option></select></div></div></div>
                 <div id="kcpFields" style="display:none;"><div class="row"><div><label>Seed</label><input id="kcpSeed" class="ltr"></div><div><label>Header Type</label><select id="kcpHeaderType" class="ltr"><option value="none">none</option><option value="srtp">srtp</option><option value="utp">utp</option><option value="wechat-video">wechat-video</option><option value="dtls">dtls</option><option value="wireguard">wireguard</option></select></div><div><label>Congestion</label><select id="kcpCongestion" class="ltr"><option value="false">false</option><option value="true">true</option></select></div></div></div>
@@ -133,6 +128,7 @@
                 <div id="xhttpFields" style="display:none;"><div class="row"><div><label>Host</label><input id="xhttpHost" class="ltr"></div><div><label>Path</label><input id="xhttpPath" class="ltr" value="/"></div><div><label>Mode</label><select id="xhttpMode" class="ltr"><option value="auto">auto</option><option value="packet-up">packet-up</option><option value="stream-up">stream-up</option><option value="stream-one">stream-one</option></select></div></div></div>
                 <div class="row" style="margin-top:12px;"><div><label>Mux</label><select id="muxEnabled"><option value="false">Disabled</option><option value="true">Enabled</option></select></div><div><label>Concurrency</label><input type="number" id="muxConcurrency" class="ltr" value="8"></div></div>
             </div>
+            <!-- Protocol -->
             <div class="panel">
                 <h2>🔌 Protocol</h2>
                 <div class="protocol-bar" id="protocolSelector">
@@ -141,16 +137,26 @@
                     <button data-proto="trojan">Trojan</button>
                     <button data-proto="ss">Shadowsocks</button>
                 </div>
-                <div id="vlessFields"><div class="row"><div><label>UUID</label><input id="vlessUuid" class="ltr"></div><button class="btn btn-outline" id="genVlessUuid">🎲</button></div><div><label>Flow</label><select id="vlessFlow" class="ltr"><option value="">None</option><option>xtls-rprx-vision</option><option>xtls-rprx-vision-udp443</option><option>xtls-rprx-origin</option><option>xtls-rprx-direct</option></select></div><div><label>Encryption</label><input id="vlessEncryption" class="ltr" value="none"></div></div>
-                <div id="vmessFields" style="display:none;"><div class="row"><div><label>UUID</label><input id="vmessUuid" class="ltr"></div><button class="btn btn-outline" id="genVmessUuid">🎲</button></div><div><label>Security</label><select id="vmessSecurity" class="ltr"><option>auto</option><option>aes-128-gcm</option><option>chacha20-poly1305</option><option>none</option><option>zero</option></select></div><div><label>Alter ID</label><input type="number" id="vmessAlterId" class="ltr" value="0"></div></div>
+                <div id="vlessFields">
+                    <div class="row"><div style="flex:2"><label>UUID</label><input id="vlessUuid" class="ltr"></div><button class="btn btn-outline" id="genVlessUuid">🎲</button></div>
+                    <div><label>Flow</label><select id="vlessFlow" class="ltr"><option value="">None</option><option>xtls-rprx-vision</option><option>xtls-rprx-vision-udp443</option><option>xtls-rprx-origin</option><option>xtls-rprx-direct</option></select></div>
+                    <div><label>Encryption</label><input id="vlessEncryption" class="ltr" value="none"></div>
+                </div>
+                <div id="vmessFields" style="display:none;">
+                    <div class="row"><div style="flex:2"><label>UUID</label><input id="vmessUuid" class="ltr"></div><button class="btn btn-outline" id="genVmessUuid">🎲</button></div>
+                    <div><label>Security</label><select id="vmessSecurity" class="ltr"><option>auto</option><option>aes-128-gcm</option><option>chacha20-poly1305</option><option>none</option><option>zero</option></select></div>
+                    <div><label>Alter ID</label><input type="number" id="vmessAlterId" class="ltr" value="0"></div>
+                </div>
                 <div id="trojanFields" style="display:none;"><div class="row"><div><label>Password</label><input id="trojanPassword" class="ltr"></div><button class="btn btn-outline" id="genTrojanPw">🎲</button></div></div>
                 <div id="ssFields" style="display:none;"><div><label>Method</label><select id="ssMethod" class="ltr"><option>aes-256-gcm</option><option>aes-128-gcm</option><option>chacha20-ietf-poly1305</option><option>2022-blake3-aes-256-gcm</option><option>2022-blake3-aes-128-gcm</option><option>2022-blake3-chacha20-poly1305</option></select></div><div class="row"><div><label>Password</label><input id="ssPassword" class="ltr"></div><button class="btn btn-outline" id="genSsPw">🎲</button></div></div>
             </div>
         </div>
+        <!-- IP List & Presets -->
         <div class="grid2col">
-            <div class="panel"><h2>🌍 IP / Domain List</h2><textarea id="ipList" class="ltr" placeholder="1.1.1.1&#10;my.server.com&#10;..."></textarea><div style="margin-top:12px;"><button class="btn btn-primary" id="generateBtn">🚀 Generate Configs</button><button class="btn btn-outline" id="clearIpBtn">🗑️ Clear</button></div></div>
+            <div class="panel"><h2>🌍 IP / Domain List</h2><textarea id="ipList" class="ltr" placeholder="1.1.1.1&#10;my.server.com&#10;IPv6 addresses supported (with or without brackets)"></textarea><div style="margin-top:12px;"><button class="btn btn-primary" id="generateBtn">🚀 Generate Configs</button><button class="btn btn-outline" id="clearIpBtn">🗑️ Clear</button></div></div>
             <div class="panel"><h2>💾 Presets</h2><div id="presetList" style="max-height:200px;overflow-y:auto;"></div><div style="margin-top:12px;"><button class="btn btn-success" id="savePresetBtn">💾 Save</button><button class="btn btn-danger" id="clearPresetsBtn">🗑️ Clear All</button></div></div>
         </div>
+        <!-- Output -->
         <div class="panel">
             <h2>📤 Output</h2>
             <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
@@ -175,8 +181,7 @@
 </div>
 <div class="footer">
     از طرف <a id="sulgx-link" href="https://github.com/SulgX" target="_blank">SulgX</a> برای مردم ایران
-    <!-- README link placeholder – replace href with actual file path when available -->
-    <a id="readme-link" href="https://github.com/SulgX/ConfigGenerator/tree/main" target="_blank">📖 README</a>
+    <a id="readme-link" href="#" target="_blank">📖 README</a>
 </div>
 <div id="qrModal" class="qr-modal"><div class="modal-content"><canvas id="qrCanvas"></canvas><br><button class="btn btn-primary" id="closeQrBtn">Close</button><button class="btn btn-outline" id="retryQrBtn" style="display:none;">Retry</button></div></div>
 <div id="notification" class="notification" style="display:none;"></div>
@@ -220,6 +225,21 @@
         return p;
     }
 
+    // IPv6 helpers
+    function isIPv6(addr) {
+        return /^[0-9a-fA-F:]+$/.test(addr) && addr.includes(':');
+    }
+    function formatAddressForURI(addr) {
+        return isIPv6(addr) ? '[' + addr + ']' : addr;
+    }
+    function stripBrackets(addr) {
+        if (addr.startsWith('[') && addr.endsWith(']')) {
+            return addr.slice(1, -1);
+        }
+        return addr;
+    }
+
+    // Protocol UI
     function selectProtocol(proto) {
         currentProtocol = proto;
         document.querySelectorAll('#protocolSelector button').forEach(b => b.classList.remove('active'));
@@ -249,7 +269,7 @@
     g('network').addEventListener('change', updateFieldVisibility);
     g('security').addEventListener('change', updateFieldVisibility);
 
-    // ==================== PARSING (unchanged) ====================
+    // Parsing with IPv6 support
     function parseCustomScheme(link, scheme) {
         const withoutScheme = link.slice(scheme.length + 3);
         const fragmentIndex = withoutScheme.indexOf('#');
@@ -262,8 +282,23 @@
         if(atIndex === -1) throw new Error('Invalid format');
         const userinfo = userinfoHost.slice(0, atIndex);
         const hostPort = userinfoHost.slice(atIndex+1);
-        const [host, portStr] = hostPort.split(':');
-        const port = portStr ? parseInt(portStr) : 443;
+        let host, port;
+        if (hostPort.startsWith('[')) {
+            const closeBracket = hostPort.indexOf(']');
+            if (closeBracket === -1) throw new Error('Invalid IPv6 address');
+            host = hostPort.slice(1, closeBracket);
+            const afterBracket = hostPort.slice(closeBracket+1);
+            port = afterBracket.startsWith(':') ? parseInt(afterBracket.slice(1)) || 443 : 443;
+        } else {
+            const colonIndex = hostPort.lastIndexOf(':');
+            if (colonIndex !== -1) {
+                host = hostPort.slice(0, colonIndex);
+                port = parseInt(hostPort.slice(colonIndex+1)) || 443;
+            } else {
+                host = hostPort;
+                port = 443;
+            }
+        }
         const params = {};
         if(query) {
             query.split('&').forEach(p => {
@@ -274,24 +309,26 @@
         }
         return { userinfo, host, port, params, fragment };
     }
+
     function safeAtob(str) {
         str = str.replace(/-/g, '+').replace(/_/g, '/');
         while(str.length % 4) str += '=';
         return atob(str);
     }
+
     function parseVMess(link) {
         const json = JSON.parse(safeAtob(link.slice(8)));
-        return { protocol:'vmess', address: json.add, port: json.port, uuid: json.id, aid: json.aid || 0, security: json.scy || 'auto', net: json.net || 'tcp', tls: json.tls==='tls'?'tls':'none', sni: json.sni || json.host || '', fp: json.fp || '', alpn: json.alpn || '', path: json.path || '', host: json.host || '', serviceName: json.path || '', remark: json.ps || '' };
+        return { protocol:'vmess', address: stripBrackets(json.add), port: json.port, uuid: json.id, aid: json.aid || 0, security: json.scy || 'auto', net: json.net || 'tcp', tls: json.tls==='tls'?'tls':'none', sni: json.sni || json.host || '', fp: json.fp || '', alpn: json.alpn || '', path: json.path || '', host: json.host || '', serviceName: json.path || '', remark: json.ps || '' };
     }
     function parseVLess(link) {
         const parsed = parseCustomScheme(link, 'vless');
         const p = parsed.params;
-        return { protocol:'vless', address: parsed.host, port: parsed.port, uuid: parsed.userinfo, remark: parsed.fragment, flow: p.flow||'', enc: p.encryption||'none', security: p.security||'none', sni: p.sni||'', fp: p.fp||'', alpn: p.alpn||'', pbk: p.pbk||'', sid: p.sid||'', spx: p.spx||'/', net: p.type||'tcp', path: p.path||'/', host: p.host||'', serviceName: p.serviceName||'', kcpSeed: p.seed||'', kcpHeader: p.headerType||'', kcpCong: p.congestion||'', quicSec: p.quicSecurity||'', quicKey: p.key||'', quicHeader: p.quicHeaderType||'', h2Host: p.host||'', h2Path: p.path||'', httpupgradeHost: p.host||'', httpupgradePath: p.path||'', splithttpHost: p.host||'', splithttpPath: p.path||'', xhttpHost: p.host||'', xhttpPath: p.path||'', xhttpMode: p.mode||'' };
+        return { protocol:'vless', address: stripBrackets(parsed.host), port: parsed.port, uuid: parsed.userinfo, remark: parsed.fragment, flow: p.flow||'', enc: p.encryption||'none', security: p.security||'none', sni: p.sni||'', fp: p.fp||'', alpn: p.alpn||'', pbk: p.pbk||'', sid: p.sid||'', spx: p.spx||'/', net: p.type||'tcp', path: p.path||'/', host: p.host||'', serviceName: p.serviceName||'', kcpSeed: p.seed||'', kcpHeader: p.headerType||'', kcpCong: p.congestion||'', quicSec: p.quicSecurity||'', quicKey: p.key||'', quicHeader: p.quicHeaderType||'', h2Host: p.host||'', h2Path: p.path||'', httpupgradeHost: p.host||'', httpupgradePath: p.path||'', splithttpHost: p.host||'', splithttpPath: p.path||'', xhttpHost: p.host||'', xhttpPath: p.path||'', xhttpMode: p.mode||'' };
     }
     function parseTrojan(link) {
         const parsed = parseCustomScheme(link, 'trojan');
         const p = parsed.params;
-        return { protocol:'trojan', address: parsed.host, port: parsed.port, password: parsed.userinfo, remark: parsed.fragment, security: p.security||'tls', sni: p.sni||'', fp: p.fp||'', alpn: p.alpn||'', net: p.type||'tcp', path: p.path||'/', host: p.host||'', serviceName: p.serviceName||'', kcpSeed: p.seed||'', kcpHeader: p.headerType||'', kcpCong: p.congestion||'', quicSec: p.quicSecurity||'', quicKey: p.key||'', quicHeader: p.quicHeaderType||'', h2Host: p.host||'', h2Path: p.path||'', httpupgradeHost: p.host||'', httpupgradePath: p.path||'', splithttpHost: p.host||'', splithttpPath: p.path||'', xhttpHost: p.host||'', xhttpPath: p.path||'', xhttpMode: p.mode||'' };
+        return { protocol:'trojan', address: stripBrackets(parsed.host), port: parsed.port, password: parsed.userinfo, remark: parsed.fragment, security: p.security||'tls', sni: p.sni||'', fp: p.fp||'', alpn: p.alpn||'', net: p.type||'tcp', path: p.path||'/', host: p.host||'', serviceName: p.serviceName||'', kcpSeed: p.seed||'', kcpHeader: p.headerType||'', kcpCong: p.congestion||'', quicSec: p.quicSecurity||'', quicKey: p.key||'', quicHeader: p.quicHeaderType||'', h2Host: p.host||'', h2Path: p.path||'', httpupgradeHost: p.host||'', httpupgradePath: p.path||'', splithttpHost: p.host||'', splithttpPath: p.path||'', xhttpHost: p.host||'', xhttpPath: p.path||'', xhttpMode: p.mode||'' };
     }
     function parseSS(link) {
         let main = link.slice(5);
@@ -306,8 +343,23 @@
             if(colon === -1) throw new Error('Invalid SS userinfo');
             method = userinfo.slice(0, colon);
             password = userinfo.slice(colon+1);
-            const hostPart = main.slice(atIdx+1).split(':');
-            addr = hostPart[0]; port = hostPart[1] || '8388';
+            const hostPort = main.slice(atIdx+1);
+            if (hostPort.startsWith('[')) {
+                const closeBracket = hostPort.indexOf(']');
+                if(closeBracket === -1) throw new Error('Invalid IPv6');
+                addr = hostPort.slice(1, closeBracket);
+                const after = hostPort.slice(closeBracket+1);
+                port = after.startsWith(':') ? parseInt(after.slice(1)) : 8388;
+            } else {
+                const colonIdx = hostPort.lastIndexOf(':');
+                if(colonIdx !== -1) {
+                    addr = hostPort.slice(0, colonIdx);
+                    port = parseInt(hostPort.slice(colonIdx+1)) || 8388;
+                } else {
+                    addr = hostPort;
+                    port = 8388;
+                }
+            }
         } else {
             const decoded = safeAtob(main);
             const parts = decoded.split('@');
@@ -316,11 +368,17 @@
             const colon = user.indexOf(':');
             method = user.slice(0, colon);
             password = user.slice(colon+1);
-            const hp = host.split(':');
-            addr = hp[0]; port = hp[1] || '8388';
+            const colonIdx = host.lastIndexOf(':');
+            if(colonIdx !== -1) {
+                addr = host.slice(0, colonIdx);
+                port = parseInt(host.slice(colonIdx+1)) || 8388;
+            } else {
+                addr = host; port = 8388;
+            }
         }
-        return { protocol:'ss', address: addr, port: parseInt(port), method, password, remark, security:'none', net:'tcp' };
+        return { protocol:'ss', address: stripBrackets(addr), port: parseInt(port), method, password, remark, security:'none', net:'tcp' };
     }
+
     function applyConfig(cfg) {
         selectProtocol(cfg.protocol);
         if(cfg.port) setVal('port', cfg.port);
@@ -348,6 +406,7 @@
         else if(cfg.protocol==='ss') { if(cfg.method) setVal('ssMethod', cfg.method); if(cfg.password) setVal('ssPassword', cfg.password); }
         updateFieldVisibility();
     }
+
     function importLinks() {
         const raw = val('importLink');
         if(!raw) return notify('No link entered', false);
@@ -366,15 +425,27 @@
             for(const line of lines) {
                 const l = line.trim();
                 let addr = '';
-                if(l.startsWith('vmess://')) addr = JSON.parse(safeAtob(l.slice(8))).add;
+                if(l.startsWith('vmess://')) addr = stripBrackets(JSON.parse(safeAtob(l.slice(8))).add);
                 else if(l.startsWith('vless://') || l.startsWith('trojan://')) {
                     const parsed = parseCustomScheme(l, l.startsWith('vless://')?'vless':'trojan');
-                    addr = parsed.host;
+                    addr = stripBrackets(parsed.host);
                 } else if(l.startsWith('ss://')) {
                     const main = l.slice(5);
                     const at = main.lastIndexOf('@');
-                    if(at !== -1) addr = main.slice(at+1).split(':')[0];
-                    else { const dec = safeAtob(main); addr = dec.split('@')[1]?.split(':')[0] || ''; }
+                    if(at !== -1) {
+                        const hostPort = main.slice(at+1);
+                        if (hostPort.startsWith('[')) {
+                            const cb = hostPort.indexOf(']');
+                            addr = cb !== -1 ? hostPort.slice(1, cb) : hostPort;
+                        } else {
+                            addr = hostPort.split(':')[0];
+                        }
+                    } else {
+                        const dec = safeAtob(main);
+                        const host = dec.split('@')[1] || '';
+                        addr = host.split(':')[0];
+                    }
+                    addr = stripBrackets(addr);
                 }
                 if(addr) ips.push(addr);
             }
@@ -384,7 +455,7 @@
         } catch(e) { notify('Parse error: ' + e.message, false); }
     }
 
-    // ==================== PRESETS ====================
+    // Presets (unchanged mapping)
     const presetKeyMap = {
         core: 'coreType', net: 'network', sec: 'security',
         pbk: 'publicKey', sid: 'shortId', spx: 'spiderX',
@@ -450,7 +521,7 @@
     function deletePreset(name) { delete presets[name]; try { localStorage.setItem('vpPresets', JSON.stringify(presets)); } catch(e) {} renderPresets(); }
     function clearPresets() { if(confirm('Delete all?')) { presets = {}; try { localStorage.removeItem('vpPresets'); } catch(e) {} renderPresets(); } }
 
-    // ==================== CONFIG GENERATION ====================
+    // Config generation
     function buildStreamSettings() {
         const net = val('network'), sec = val('security');
         let stream = { network: net, security: sec };
@@ -491,7 +562,7 @@
             out.streamSettings = stream;
             if(mux) out.mux = mux;
             return cfg;
-        } else {
+        } else { // sing-box
             const cfg = {
                 log: { level: "warn" },
                 inbounds: [ { type: "mixed", tag: "mixed-in", listen: "127.0.0.1", listen_port: 10808 } ],
@@ -548,6 +619,8 @@
         else if (net === 'splithttp') { params.push(`host=${encodeURIComponent(val('splithttpHost'))}`, `path=${encodeURIComponent(val('splithttpPath'))}`); }
         else if (net === 'xhttp') { params.push(`host=${encodeURIComponent(val('xhttpHost'))}`, `path=${encodeURIComponent(val('xhttpPath'))}`, `mode=${val('xhttpMode')}`); }
 
+        const formattedAddr = formatAddressForURI(server);
+
         switch (currentProtocol) {
             case 'vmess': {
                 const cfg = { v: "2", ps: decodeURIComponent(name), add: server, port, id: val('vmessUuid'), aid: val('vmessAlterId')||0, scy: val('vmessSecurity')||'auto', net, type: (sec==='tls'||sec==='reality')?'tls':'none', host: val('wsHost')||'', path: net==='grpc'?val('grpcServiceName'):(val('wsPath')||''), tls: sec==='tls'?'tls':'', sni, alpn: val('alpn'), fp };
@@ -562,15 +635,15 @@
                 if (flowVal && net === 'tcp' && sec !== 'none') finalParams.push(`flow=${encodeURIComponent(flowVal)}`);
                 finalParams.push(...params);
                 const queryStr = finalParams.length ? '?' + finalParams.join('&') : '';
-                return `vless://${val('vlessUuid')}@${server}:${port}${queryStr}#${name}`;
+                return `vless://${val('vlessUuid')}@${formattedAddr}:${port}${queryStr}#${name}`;
             }
             case 'trojan': {
                 const queryStr = params.length ? '?' + params.join('&') : '';
-                return `trojan://${val('trojanPassword')}@${server}:${port}${queryStr}#${name}`;
+                return `trojan://${val('trojanPassword')}@${formattedAddr}:${port}${queryStr}#${name}`;
             }
             case 'ss': {
                 const userinfo = btoa(`${val('ssMethod')}:${val('ssPassword')}`);
-                let url = `ss://${userinfo}@${server}:${port}`;
+                let url = `ss://${userinfo}@${formattedAddr}:${port}`;
                 if (net !== 'tcp' || sec !== 'none') {
                     let plugin = '';
                     if (sec === 'tls' || sec === 'reality') plugin += 'tls;';
@@ -596,7 +669,8 @@
 
     function generateConfigs() {
         if(!validateInputs()) return;
-        const list = val('ipList').split('\n').map(s=>s.trim()).filter(s=>s);
+        const rawList = val('ipList').split('\n').map(s=>s.trim()).filter(s=>s);
+        const list = rawList.map(stripBrackets); // ensure no brackets in internal address
         const core = val('coreType');
         generatedConfigs = list.map((server, idx) => ({
             name: `${val('serverBaseName')||'Server'} [${idx+1}]`,
@@ -607,7 +681,7 @@
         notify(`${generatedConfigs.length} configs generated`);
     }
 
-    // ==================== OUTPUT ====================
+    // Output, ping, etc.
     function switchOutput(mode) {
         outputMode = mode;
         g('btnJson').classList.toggle('active', mode==='json');
@@ -668,7 +742,7 @@
     function closeQR() { g('qrModal').style.display = 'none'; qrLoaded = false; g('retryQrBtn').style.display = 'none'; }
     function retryQR() { qrLoaded = false; showQR(); }
 
-    // ==================== PING ====================
+    // Ping (unchanged, works for ws)
     function pingAllConfigs() {
         if(!generatedConfigs.length) { notify('Generate configs first', false); return; }
         if(pingInProgress) { notify('Ping already in progress', false); return; }
@@ -722,8 +796,9 @@
             net = outbound.transport?.type || 'tcp'; wsPath = outbound.transport?.path || '';
         } else return null;
         if(!server || !port || net !== 'ws') return null;
+        const addr = formatAddressForURI(server);
         const scheme = tls ? 'wss' : 'ws';
-        const wsUrl = `${scheme}://${sni || server}:${port}${wsPath}`;
+        const wsUrl = `${scheme}://${addr}:${port}${wsPath}`;
         try {
             const start = performance.now();
             await new Promise((resolve, reject) => {
@@ -773,7 +848,7 @@
 
     function clearIPs() { g('ipList').value = ''; try { localStorage.removeItem('ipList'); } catch(e) {} }
 
-    // ==================== EVENT LISTENERS ====================
+    // Event listeners
     function setupListeners() {
         g('importBtn').addEventListener('click', importLinks);
         g('clearImportBtn').addEventListener('click', () => { g('importLink').value = ''; });
