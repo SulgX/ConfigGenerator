@@ -1,4 +1,4 @@
-# ⚡ Config Generator – Xray / V2Ray / Sing‑box
+# ⚡ Config Generator V 1.0 – Xray / V2Ray / Sing‑box
 
 A web‑based tool to quickly generate identical configuration files for **Xray**, **V2Ray**, and **Sing‑box** using **VLESS**, **VMess**, **Trojan**, or **Shadowsocks** protocols.  
 Perfect for testing clean IPs and domains with the same settings.
