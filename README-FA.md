@@ -1,4 +1,4 @@
-# ⚡ Config Generator – Xray / V2Ray / Sing‑box
+# ⚡ Config Generator V 1.0 – Xray / V2Ray / Sing‑box
 
 ابزاری تحت وب برای تولید سریع کانفیگ‌های یکسان برای هسته‌های **Xray**، **V2Ray** و **Sing‑box** با پروتکل‌های **VLESS**، **VMess**، **Trojan** و **Shadowsocks**.  
 مناسب برای تست آی‌پی‌ها و دامنه‌های تمیز با تنظیمات مشابه.
