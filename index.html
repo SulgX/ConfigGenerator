@@ -3,134 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Config Generator – Xray / V2Ray / Sing‑box</title>
+    <title>Config Generator V 1.1 – Xray / V2Ray / Sing‑box</title>
     <style>
         :root {
             --bg: #0d1117;
-            --surface: #161b22;
-            --border: #30363d;
+            --surface: rgba(22, 27, 34, 0.75);
+            --border: rgba(48, 54, 61, 0.7);
             --text: #c9d1d9;
             --accent: #58a6ff;
             --green: #3fb950;
             --red: #f85149;
             --gold: #ffd700;
+            --glass-bg: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        body.light {
+            --bg: #f6f8fa;
+            --surface: rgba(255, 255, 255, 0.8);
+            --border: rgba(0,0,0,0.1);
+            --text: #24292f;
+            --accent: #0969da;
+            --green: #1a7f37;
+            --red: #cf222e;
+            --glass-bg: rgba(0,0,0,0.03);
+            --glass-border: rgba(0,0,0,0.08);
+            --glass-shadow: 0 8px 32px rgba(0,0,0,0.1);
         }
         * { margin:0; padding:0; box-sizing:border-box; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.5; padding: 10px; display: flex; flex-direction: column; min-height: 100vh; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.5;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
         .main-container { flex: 1; }
         .header { text-align: center; margin-bottom: 20px; }
-        .header h1 { color: var(--accent); font-size: 2rem; }
-        .header .subtitle { opacity: 0.6; font-size: 0.9rem; }
-        .footer { text-align: center; padding: 15px; margin-top: 30px; border-top: 1px solid var(--border); opacity: 0.9; font-size: 0.9rem; }
+        .header h1 { color: var(--accent); font-size: 2rem; letter-spacing: 1px; }
+        .header .subtitle { opacity: 0.7; font-size: 0.9rem; }
+        .footer { text-align: center; padding: 15px; margin-top: 30px; border-top: 1px solid var(--border); opacity: 0.8; font-size: 0.9rem; }
         .footer a { color: var(--gold); text-decoration: none; }
         .footer a:visited { color: var(--gold); }
         .footer a:hover { text-decoration: underline; }
         .container { max-width: 1400px; margin: 0 auto; }
-        .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-        .panel h2 { color: var(--accent); font-size: 1.2rem; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-        .grid2col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 768px) { .grid2col { grid-template-columns: 1fr; } .row { flex-wrap: wrap; } .row > * { flex: 1 1 100%; } .btn { padding: 8px 16px; } .protocol-bar button { flex: 1 1 45%; } }
-        label { display: block; margin-bottom: 6px; font-size: 0.85rem; }
-        input, select, textarea {
-            width: 100%; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border);
-            border-radius: 8px; color: var(--text); font-size: 0.9rem; font-family: inherit;
-            transition: border 0.2s;
+        .panel {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--glass-shadow);
         }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(88,166,255,0.2); }
+        .panel h2 {
+            color: var(--accent);
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .grid2col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .grid2col { grid-template-columns: 1fr; } .btn { padding: 8px 16px; } }
+        .field-block { margin-bottom: 16px; }
+        .field-block label { display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 500; }
+        .label-english { direction: ltr; display: block; }
+        .label-english::after { content: " :"; }
+        .no-colon::after { content: none !important; }
+
+        input, select, textarea {
+            width: 100%; padding: 10px 12px; background: var(--glass-bg);
+            backdrop-filter: blur(4px); border: 1px solid var(--glass-border);
+            border-radius: 8px; color: var(--text); font-size: 0.9rem; font-family: inherit;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(88,166,255,0.2); }
         textarea { resize: vertical; min-height: 80px; }
         .btn {
             display: inline-flex; align-items: center; justify-content: center;
             padding: 10px 18px; border: none; border-radius: 8px; font-size: 0.85rem;
             font-weight: 600; cursor: pointer; transition: all 0.2s; margin: 4px; gap: 6px;
+            backdrop-filter: blur(4px);
         }
         .btn-primary { background: var(--accent); color: #fff; }
-        .btn-primary:hover { background: #79c0ff; }
+        .btn-primary:hover { filter: brightness(1.15); }
         .btn-success { background: var(--green); color: #fff; }
-        .btn-success:hover { background: #4cb658; }
+        .btn-success:hover { filter: brightness(1.15); }
         .btn-danger { background: var(--red); color: #fff; }
-        .btn-danger:hover { background: #e5534b; }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-        .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-danger:hover { filter: brightness(1.15); }
+        .btn-outline { background: transparent; border: 1px solid var(--glass-border); color: var(--text); }
+        .btn-outline:hover { background: var(--glass-bg); }
         .protocol-bar { display: flex; gap: 8px; margin-bottom: 16px; }
         .protocol-bar button {
-            flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--text);
-            border-radius: 20px; padding: 8px 0; cursor: pointer; font-weight: 600;
+            flex: 1; background: var(--glass-bg); border: 1px solid var(--glass-border);
+            color: var(--text); border-radius: 20px; padding: 8px 0; cursor: pointer; font-weight: 600;
         }
         .protocol-bar button.active { background: var(--accent); border-color: var(--accent); color: #000; }
-        .row { display: flex; gap: 10px; align-items: center; }
-        .config-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin: 12px 0; position: relative; }
+        .config-card {
+            background: var(--glass-bg); backdrop-filter: blur(8px);
+            border: 1px solid var(--glass-border); border-radius: 8px; padding: 16px; margin: 12px 0;
+            position: relative;
+        }
         .config-card h4 { color: var(--accent); margin-bottom: 10px; }
         .config-card pre {
-            background: #00000033; padding: 12px; border-radius: 6px; overflow-x: auto;
-            font-family: 'JetBrains Mono', 'Cascadia Code', monospace; font-size: 0.8rem;
-            color: var(--green); white-space: pre-wrap; word-break: break-all;
-            direction: ltr; text-align: left;
+            background: var(--bg); padding: 12px; border-radius: 6px; overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--green);
+            white-space: pre-wrap; word-break: break-all; direction: ltr; text-align: left;
         }
         .actions { position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; }
         .btn-sm { padding: 4px 12px; font-size: 0.75rem; }
-        .ping-container { max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; margin-top: 12px; }
+        .ping-container { max-height: 400px; overflow-y: auto; border: 1px solid var(--glass-border); border-radius: 8px; margin-top: 12px; }
         .ping-table { width: 100%; border-collapse: collapse; direction: ltr; }
-        .ping-table th, .ping-table td { border: 1px solid var(--border); padding: 8px; text-align: center; }
+        .ping-table th, .ping-table td { border: 1px solid var(--glass-border); padding: 8px; text-align: center; }
         .ping-table th { background: var(--surface); color: var(--accent); position: sticky; top: 0; cursor: pointer; }
         .best { background: rgba(63,185,80,0.15); }
-        .notification { position: fixed; top: 20px; right: 20px; background: var(--green); color: #000; padding: 12px 20px; border-radius: 8px; font-weight: bold; z-index: 999; animation: slideIn 0.3s; }
+        .active-profile-row {
+            background: rgba(88, 166, 255, 0.18);
+            border-left: 3px solid var(--accent);
+        }
+        .notification {
+            position: fixed; top: 20px; right: 20px; background: var(--green); color: #000;
+            padding: 12px 20px; border-radius: 8px; font-weight: bold; z-index: 999;
+            animation: slideIn 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
         @keyframes slideIn { from { transform: translateX(100%); } }
-        .output-scroll { max-height: 500px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--bg); }
+        .output-scroll { max-height: 500px; overflow-y: auto; border: 1px solid var(--glass-border); border-radius: 8px; padding: 8px; background: var(--bg); }
         .qr-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 1000; }
         .qr-modal .modal-content { background: var(--surface); padding: 20px; border-radius: 12px; text-align: center; }
         .progress-bar { width: 100%; background: var(--border); border-radius: 4px; height: 6px; margin: 8px 0; }
         .progress-fill { height: 100%; width: 0; background: var(--accent); border-radius: 4px; transition: width 0.2s; }
 
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @keyframes blink { 0%,100%{ opacity:1; } 50%{ opacity:0.4; } }
         #sulgx-link { animation: blink 1.2s infinite; font-weight: bold; }
         #readme-link { margin-left: 15px; color: var(--text); }
         #readme-link:hover { color: var(--accent); }
         input.ltr, textarea.ltr, select.ltr { direction: ltr; text-align: left; }
+        .english-header { direction: ltr; text-align: left; }
+
+        .theme-toggle {
+            position: fixed; bottom: 20px; left: 20px; background: var(--surface);
+            border: 1px solid var(--glass-border); border-radius: 50%; width: 44px; height: 44px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            z-index: 100; backdrop-filter: blur(8px); box-shadow: var(--glass-shadow);
+            font-size: 1.2rem; transition: all 0.3s;
+        }
+        .theme-toggle:hover { transform: scale(1.1); }
+
+        .port-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; align-items: center; }
+        .port-btn {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 6px 14px; font-size: 0.8rem; cursor: pointer;
+            color: var(--text); transition: all 0.2s; backdrop-filter: blur(4px);
+            position: relative;
+        }
+        .port-btn.selected { background: var(--accent); color: #000; font-weight: bold; }
+        .port-btn:hover { background: var(--accent); color: #000; }
+        .port-btn .remove-port {
+            position: absolute; top: -6px; right: -6px; width: 18px; height: 18px;
+            background: var(--red); color: #fff; border-radius: 50%; font-size: 12px;
+            line-height: 18px; text-align: center; cursor: pointer; display: none;
+        }
+        .port-btn.removable:hover .remove-port { display: block; }
+        .custom-port-row { display: flex; gap: 6px; align-items: center; }
+        .custom-port-row input { width: 80px; }
+
+        .profile-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .profile-table th, .profile-table td { border: 1px solid var(--glass-border); padding: 8px; text-align: center; }
+        .profile-table th { background: var(--surface); color: var(--accent); }
+        .profile-table tr:hover { background: var(--glass-bg); }
+
+        select option { background: var(--bg); color: var(--text); }
+        input[readonly] { opacity: 0.85; cursor: default; }
+        .custom-input-row { display: none; margin-top: 4px; }
+        .naming-preview { margin-top: 6px; font-size: 0.8rem; opacity: 0.7; direction: ltr; }
     </style>
 </head>
-<body>
+<body class="dark">
+<div class="theme-toggle" id="themeToggle" title="Switch light/dark mode">🌙</div>
 <div class="main-container">
     <div class="header">
-        <h1>⚡ Config Generator</h1>
+        <h1>⚡ Config Generator V 1.1</h1>
         <div class="subtitle">Xray · V2Ray · Sing‑box – VLESS / VMess / Trojan / Shadowsocks</div>
     </div>
     <div class="container">
         <!-- Import -->
         <div class="panel">
-            <h2>📥 Import Link(s) – one per line</h2>
-            <textarea id="importLink" class="ltr" placeholder="vless://...&#10;trojan://..."></textarea>
-            <div style="margin-top:10px;"><button class="btn btn-primary" id="importBtn">🔍 Parse & Apply</button><button class="btn btn-outline" id="clearImportBtn">🗑️ Clear</button></div>
+            <h2 class="english-header">📥 Import Links</h2>
+            <textarea id="importLink" class="ltr" placeholder="Paste multiple links (one per line) and press Import"></textarea>
+            <div style="margin-top:10px;"><button class="btn btn-primary" id="importBtn">🔍 Import as Profiles</button><button class="btn btn-outline" id="clearImportBtn">🗑️ Clear</button></div>
         </div>
-        <div class="grid2col">
-            <!-- General -->
-            <div class="panel">
-                <h2>⚙️ General</h2>
-                <div class="row" style="margin-bottom:12px;">
-                    <div style="flex:1"><label>Core</label><select id="coreType"><option value="xray">Xray</option><option value="v2ray">V2Ray</option><option value="singbox">Sing‑box</option></select></div>
-                    <div style="flex:2"><label>Base Name</label><input type="text" id="serverBaseName" class="ltr" value="Server USA" placeholder="Prefix"></div>
-                </div>
-                <div class="row" style="margin-bottom:12px;">
-                    <div><label>Port</label><input type="number" id="port" class="ltr" value="443"></div>
-                    <div><label>Network</label><select id="network"><option value="tcp">TCP</option><option value="ws">WebSocket</option><option value="grpc">gRPC</option><option value="h2">HTTP/2</option><option value="kcp">mKCP</option><option value="quic">QUIC</option><option value="httpupgrade">HTTP Upgrade</option><option value="splithttp">SplitHTTP</option><option value="xhttp">XHTTP</option></select></div>
-                    <div><label>Security</label><select id="security"><option value="none">None</option><option value="tls">TLS</option><option value="reality">Reality</option></select></div>
-                </div>
-                <!-- TLS / Reality fields -->
-                <div id="tlsRealityFields" style="display:none;"><div class="row"><div><label>SNI</label><input id="sni" class="ltr" placeholder="example.com"></div><div><label>Fingerprint</label><select id="fingerprint" class="ltr"><option value="chrome">Chrome</option><option value="firefox">Firefox</option><option value="safari">Safari</option><option value="ios">iOS</option><option value="android">Android</option><option value="edge">Edge</option><option value="random">Random</option><option value="randomized">Randomized</option></select></div><div><label>ALPN</label><input id="alpn" class="ltr" value="h2,http/1.1"></div></div></div>
-                <div id="realityOnlyFields" style="display:none;"><div class="row"><div><label>Public Key</label><input id="publicKey" class="ltr"></div><div><label>Short ID</label><input id="shortId" class="ltr"></div><div><label>Spider X</label><input id="spiderX" class="ltr" value="/"></div></div></div>
-                <!-- Transport fields -->
-                <div id="wsFields" style="display:none;"><div class="row"><div><label>Path</label><input id="wsPath" class="ltr" value="/ws"></div><div><label>Host</label><input id="wsHost" class="ltr" placeholder="example.com"></div></div></div>
-                <div id="grpcFields" style="display:none;"><div class="row"><div><label>Service Name</label><input id="grpcServiceName" class="ltr" value="GunService"></div><div><label>Mode</label><select id="grpcMultiMode" class="ltr"><option value="gun">gun</option><option value="multi">multi</option></select></div></div></div>
-                <div id="kcpFields" style="display:none;"><div class="row"><div><label>Seed</label><input id="kcpSeed" class="ltr"></div><div><label>Header Type</label><select id="kcpHeaderType" class="ltr"><option value="none">none</option><option value="srtp">srtp</option><option value="utp">utp</option><option value="wechat-video">wechat-video</option><option value="dtls">dtls</option><option value="wireguard">wireguard</option></select></div><div><label>Congestion</label><select id="kcpCongestion" class="ltr"><option value="false">false</option><option value="true">true</option></select></div></div></div>
-                <div id="quicFields" style="display:none;"><div class="row"><div><label>Security</label><select id="quicSecurity" class="ltr"><option value="none">none</option><option value="aes-128-gcm">aes-128-gcm</option><option value="chacha20-poly1305">chacha20-poly1305</option></select></div><div><label>Key</label><input id="quicKey" class="ltr"></div><div><label>Header Type</label><select id="quicHeaderType" class="ltr"><option value="none">none</option><option value="srtp">srtp</option><option value="utp">utp</option><option value="wechat-video">wechat-video</option><option value="dtls">dtls</option><option value="wireguard">wireguard</option></select></div></div></div>
-                <div id="h2Fields" style="display:none;"><div class="row"><div><label>Host</label><input id="h2Host" class="ltr"></div><div><label>Path</label><input id="h2Path" class="ltr" value="/"></div></div></div>
-                <div id="httpupgradeFields" style="display:none;"><div class="row"><div><label>Host</label><input id="httpupgradeHost" class="ltr"></div><div><label>Path</label><input id="httpupgradePath" class="ltr" value="/"></div></div></div>
-                <div id="splithttpFields" style="display:none;"><div class="row"><div><label>Host</label><input id="splithttpHost" class="ltr"></div><div><label>Path</label><input id="splithttpPath" class="ltr" value="/"></div></div></div>
-                <div id="xhttpFields" style="display:none;"><div class="row"><div><label>Host</label><input id="xhttpHost" class="ltr"></div><div><label>Path</label><input id="xhttpPath" class="ltr" value="/"></div><div><label>Mode</label><select id="xhttpMode" class="ltr"><option value="auto">auto</option><option value="packet-up">packet-up</option><option value="stream-up">stream-up</option><option value="stream-one">stream-one</option></select></div></div></div>
-                <div class="row" style="margin-top:12px;"><div><label>Mux</label><select id="muxEnabled"><option value="false">Disabled</option><option value="true">Enabled</option></select></div><div><label>Concurrency</label><input type="number" id="muxConcurrency" class="ltr" value="8"></div></div>
+
+        <!-- Profiles -->
+        <div class="panel">
+            <h2 class="english-header">📋 Profiles <button class="btn btn-sm btn-outline" id="newProfileBtn" style="margin-right:auto;">＋ New Empty Profile</button></h2>
+            <div style="max-height:250px;overflow-y:auto;">
+                <table class="profile-table" id="profileTable">
+                    <thead><tr><th>Name</th><th>Protocol</th><th>Address</th><th>Port</th><th>Network</th><th>Actions</th></tr></thead>
+                    <tbody id="profileTableBody"></tbody>
+                </table>
+                <p id="noProfilesMsg" style="opacity:0.6;text-align:center;padding:20px;">No profiles yet. Import links or create a new one.</p>
             </div>
+            <div style="margin-top:10px;"><button class="btn btn-danger btn-sm" id="deleteAllProfilesBtn">🗑️ Delete All Profiles</button></div>
+        </div>
+
+        <div class="grid2col">
+            <!-- General Settings -->
+            <div class="panel">
+                <h2 class="english-header">⚙️ General</h2>
+                <div class="field-block"><label class="label-english">Core</label><select id="coreType"><option value="xray">Xray</option><option value="v2ray">V2Ray</option><option value="singbox">Sing‑box</option></select></div>
+                <div class="field-block"><label class="label-english">Base Name</label><input type="text" id="serverBaseName" class="ltr" placeholder="Profile name"></div>
+                <div class="field-block"><label class="label-english">Network</label><select id="network"><option value="tcp">TCP</option><option value="ws">WebSocket</option><option value="grpc">gRPC</option><option value="h2">HTTP/2</option><option value="kcp">mKCP</option><option value="quic">QUIC</option><option value="httpupgrade">HTTP Upgrade</option><option value="splithttp">SplitHTTP</option><option value="xhttp">XHTTP</option></select></div>
+                <div class="field-block"><label class="label-english">Security</label><select id="security"><option value="none">None</option><option value="tls">TLS</option><option value="reality">Reality</option></select></div>
+                <div class="field-block"><label class="label-english">Ports</label>
+                    <div class="port-buttons" id="portButtons"></div>
+                    <div class="custom-port-row" style="margin-top:6px;">
+                        <input type="number" id="customPortInput" placeholder="Port" min="1" max="65535" class="ltr" style="width:80px;">
+                        <button class="btn btn-sm btn-outline" id="addCustomPortBtn">＋</button>
+                    </div>
+                </div>
+                <!-- Naming Style -->
+                <div class="field-block">
+                    <label class="label-english">Naming Style</label>
+                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                        <select id="namingStyle" class="ltr" onchange="toggleNamingCustom()">
+                            <option value="plain">Plain (#number)</option>
+                            <option value="emoji">Emoji</option>
+                            <option value="flag">Flag / Code</option>
+                        </select>
+                        <div id="emojiPicker" style="display:none;">
+                            <select id="emojiSelect" class="ltr">
+                                <option value="🌍">🌍</option><option value="🚀">🚀</option><option value="💻">💻</option>
+                                <option value="🔒">🔒</option><option value="⚡">⚡</option><option value="🌟">🌟</option>
+                                <option value="🔥">🔥</option><option value="💎">💎</option>
+                                <option value="🇺🇸">🇺🇸</option><option value="🇩🇪">🇩🇪</option>
+                                <option value="🇳🇱">🇳🇱</option><option value="🇨🇦">🇨🇦</option>
+                                <option value="🇬🇧">🇬🇧</option><option value="🇫🇷">🇫🇷</option>
+                                <option value="🇮🇷">🇮🇷</option>
+                            </select>
+                        </div>
+                        <input id="flagCode" class="ltr" placeholder="e.g., US or custom" style="display:none; width:100px;">
+                    </div>
+                    <div class="naming-preview" id="namingPreview"></div>
+                </div>
+
+                <!-- TLS/Reality fields -->
+                <div id="tlsRealityFields" style="display:none;">
+                    <div class="field-block"><label class="label-english">SNI</label><input id="sni" class="ltr" placeholder="example.com"></div>
+                    <div class="field-block"><label class="label-english">Fingerprint</label>
+                        <select id="fingerprint" class="ltr" onchange="toggleCustomInput(this,'fingerprintCustom')">
+                            <option value="chrome">Chrome</option><option value="firefox">Firefox</option>
+                            <option value="safari">Safari</option><option value="ios">iOS</option>
+                            <option value="android">Android</option><option value="edge">Edge</option>
+                            <option value="random">Random</option><option value="randomized">Randomized</option>
+                            <option value="custom">Custom…</option>
+                        </select>
+                        <input id="fingerprintCustom" class="ltr custom-input-row" placeholder="Enter custom fingerprint" style="display:none;">
+                    </div>
+                    <div class="field-block"><label class="label-english">ALPN</label>
+                        <select id="alpn" class="ltr" onchange="toggleCustomInput(this,'alpnCustom')">
+                            <option value="h2,http/1.1">h2,http/1.1</option>
+                            <option value="h2">h2</option><option value="http/1.1">http/1.1</option>
+                            <option value="h3">h3</option><option value="h3,h2">h3,h2</option>
+                            <option value="h3,h2,http/1.1">h3,h2,http/1.1</option>
+                            <option value="h3,http/1.1">h3,http/1.1</option>
+                            <option value="custom">Custom…</option>
+                        </select>
+                        <input id="alpnCustom" class="ltr custom-input-row" placeholder="e.g. h2,http/1.1" style="display:none;">
+                    </div>
+                    <div class="field-block">
+                        <label style="display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" id="allowInsecure" style="width:auto; margin:0;"> Allow Insecure
+                        </label>
+                    </div>
+                </div>
+                <div id="realityOnlyFields" style="display:none;">
+                    <div class="field-block"><label class="label-english">Public Key</label><input id="publicKey" class="ltr"></div>
+                    <div class="field-block"><label class="label-english">Short ID</label><input id="shortId" class="ltr"></div>
+                    <div class="field-block"><label class="label-english">Spider X</label><input id="spiderX" class="ltr" value="/"></div>
+                </div>
+                <!-- Transport fields -->
+                <div id="wsFields" style="display:none;"><div class="field-block"><label class="label-english">Path</label><input id="wsPath" class="ltr" value="/ws"></div><div class="field-block"><label class="label-english">Host</label><input id="wsHost" class="ltr" placeholder="example.com"></div></div>
+                <div id="grpcFields" style="display:none;"><div class="field-block"><label class="label-english">Service Name</label><input id="grpcServiceName" class="ltr" value="GunService"></div><div class="field-block"><label class="label-english">Mode</label><select id="grpcMultiMode" class="ltr"><option value="gun">gun</option><option value="multi">multi</option></select></div></div>
+                <div id="kcpFields" style="display:none;"><div class="field-block"><label class="label-english">Seed</label><input id="kcpSeed" class="ltr"></div><div class="field-block"><label class="label-english">Header Type</label><select id="kcpHeaderType" class="ltr"><option value="none">none</option><option value="srtp">srtp</option><option value="utp">utp</option><option value="wechat-video">wechat-video</option><option value="dtls">dtls</option><option value="wireguard">wireguard</option></select></div><div class="field-block"><label class="label-english">Congestion</label><select id="kcpCongestion" class="ltr"><option value="false">false</option><option value="true">true</option></select></div></div>
+                <div id="quicFields" style="display:none;"><div class="field-block"><label class="label-english">Security</label><select id="quicSecurity" class="ltr"><option value="none">none</option><option value="aes-128-gcm">aes-128-gcm</option><option value="chacha20-poly1305">chacha20-poly1305</option></select></div><div class="field-block"><label class="label-english">Key</label><input id="quicKey" class="ltr"></div><div class="field-block"><label class="label-english">Header Type</label><select id="quicHeaderType" class="ltr"><option value="none">none</option><option value="srtp">srtp</option><option value="utp">utp</option><option value="wechat-video">wechat-video</option><option value="dtls">dtls</option><option value="wireguard">wireguard</option></select></div></div>
+                <div id="h2Fields" style="display:none;"><div class="field-block"><label class="label-english">Host</label><input id="h2Host" class="ltr"></div><div class="field-block"><label class="label-english">Path</label><input id="h2Path" class="ltr" value="/"></div></div>
+                <div id="httpupgradeFields" style="display:none;"><div class="field-block"><label class="label-english">Host</label><input id="httpupgradeHost" class="ltr"></div><div class="field-block"><label class="label-english">Path</label><input id="httpupgradePath" class="ltr" value="/"></div></div>
+                <div id="splithttpFields" style="display:none;"><div class="field-block"><label class="label-english">Host</label><input id="splithttpHost" class="ltr"></div><div class="field-block"><label class="label-english">Path</label><input id="splithttpPath" class="ltr" value="/"></div></div>
+                <div id="xhttpFields" style="display:none;"><div class="field-block"><label class="label-english">Host</label><input id="xhttpHost" class="ltr"></div><div class="field-block"><label class="label-english">Path</label><input id="xhttpPath" class="ltr" value="/"></div><div class="field-block"><label class="label-english">Mode</label><select id="xhttpMode" class="ltr"><option value="auto">auto</option><option value="packet-up">packet-up</option><option value="stream-up">stream-up</option><option value="stream-one">stream-one</option></select></div></div>
+                <div class="field-block"><label class="label-english">Mux</label><select id="muxEnabled"><option value="false">Disabled</option><option value="true">Enabled</option></select></div>
+                <div class="field-block"><label class="label-english">Concurrency</label><input type="number" id="muxConcurrency" class="ltr" value="8"></div>
+            </div>
+
             <!-- Protocol -->
             <div class="panel">
-                <h2>🔌 Protocol</h2>
+                <h2 class="english-header">🔌 Protocol</h2>
                 <div class="protocol-bar" id="protocolSelector">
                     <button class="active" data-proto="vless">VLESS</button>
                     <button data-proto="vmess">VMess</button>
@@ -138,32 +311,60 @@
                     <button data-proto="ss">Shadowsocks</button>
                 </div>
                 <div id="vlessFields">
-                    <div class="row"><div style="flex:2"><label>UUID</label><input id="vlessUuid" class="ltr"></div><button class="btn btn-outline" id="genVlessUuid">🎲</button></div>
-                    <div><label>Flow</label><select id="vlessFlow" class="ltr"><option value="">None</option><option>xtls-rprx-vision</option><option>xtls-rprx-vision-udp443</option><option>xtls-rprx-origin</option><option>xtls-rprx-direct</option></select></div>
-                    <div><label>Encryption</label><input id="vlessEncryption" class="ltr" value="none"></div>
+                    <div class="field-block"><label class="label-english">UUID</label><input id="vlessUuid" class="ltr" readonly value="Auto Fill"></div>
+                    <div class="field-block"><label class="label-english">Flow</label>
+                        <select id="vlessFlow" class="ltr" onchange="toggleCustomInput(this,'vlessFlowCustom')">
+                            <option value="">None</option><option>xtls-rprx-vision</option><option>xtls-rprx-vision-udp443</option><option>xtls-rprx-origin</option><option>xtls-rprx-direct</option>
+                            <option value="custom">Custom…</option>
+                        </select>
+                        <input id="vlessFlowCustom" class="ltr custom-input-row" placeholder="Enter custom flow" style="display:none;">
+                    </div>
+                    <div class="field-block"><label class="label-english">Encryption</label>
+                        <select id="vlessEncryption" class="ltr" onchange="toggleCustomInput(this,'vlessEncryptionCustom')">
+                            <option value="none">none</option><option value="aes-128-gcm">aes-128-gcm</option><option value="chacha20-poly1305">chacha20-poly1305</option>
+                            <option value="custom">Custom…</option>
+                        </select>
+                        <input id="vlessEncryptionCustom" class="ltr custom-input-row" placeholder="Enter custom encryption" style="display:none;">
+                    </div>
                 </div>
                 <div id="vmessFields" style="display:none;">
-                    <div class="row"><div style="flex:2"><label>UUID</label><input id="vmessUuid" class="ltr"></div><button class="btn btn-outline" id="genVmessUuid">🎲</button></div>
-                    <div><label>Security</label><select id="vmessSecurity" class="ltr"><option>auto</option><option>aes-128-gcm</option><option>chacha20-poly1305</option><option>none</option><option>zero</option></select></div>
-                    <div><label>Alter ID</label><input type="number" id="vmessAlterId" class="ltr" value="0"></div>
+                    <div class="field-block"><label class="label-english">UUID</label><input id="vmessUuid" class="ltr" readonly value="Auto Fill"></div>
+                    <div class="field-block"><label class="label-english">Security</label><select id="vmessSecurity" class="ltr"><option>auto</option><option>aes-128-gcm</option><option>chacha20-poly1305</option><option>none</option><option>zero</option></select></div>
+                    <div class="field-block"><label class="label-english">Alter ID</label><input type="number" id="vmessAlterId" class="ltr" value="0"></div>
                 </div>
-                <div id="trojanFields" style="display:none;"><div class="row"><div><label>Password</label><input id="trojanPassword" class="ltr"></div><button class="btn btn-outline" id="genTrojanPw">🎲</button></div></div>
-                <div id="ssFields" style="display:none;"><div><label>Method</label><select id="ssMethod" class="ltr"><option>aes-256-gcm</option><option>aes-128-gcm</option><option>chacha20-ietf-poly1305</option><option>2022-blake3-aes-256-gcm</option><option>2022-blake3-aes-128-gcm</option><option>2022-blake3-chacha20-poly1305</option></select></div><div class="row"><div><label>Password</label><input id="ssPassword" class="ltr"></div><button class="btn btn-outline" id="genSsPw">🎲</button></div></div>
+                <div id="trojanFields" style="display:none;">
+                    <div class="field-block"><label class="label-english">Password</label><input id="trojanPassword" class="ltr" readonly value="Auto Fill"></div>
+                </div>
+                <div id="ssFields" style="display:none;">
+                    <div class="field-block"><label class="label-english">Method</label>
+                        <select id="ssMethod" class="ltr" onchange="toggleCustomInput(this,'ssMethodCustom')">
+                            <option>aes-256-gcm</option><option>aes-128-gcm</option>
+                            <option>chacha20-ietf-poly1305</option><option>2022-blake3-aes-256-gcm</option>
+                            <option>2022-blake3-aes-128-gcm</option><option>2022-blake3-chacha20-poly1305</option>
+                            <option value="custom">Custom…</option>
+                        </select>
+                        <input id="ssMethodCustom" class="ltr custom-input-row" placeholder="Enter custom method" style="display:none;">
+                    </div>
+                    <div class="field-block"><label class="label-english">Password</label><input id="ssPassword" class="ltr" readonly value="Auto Fill"></div>
+                </div>
+                <div style="margin-top:20px;"><button class="btn btn-success" id="saveProfileBtn">💾 Save Profile</button></div>
             </div>
         </div>
-        <!-- IP List & Presets -->
-        <div class="grid2col">
-            <div class="panel"><h2>🌍 IP / Domain List</h2><textarea id="ipList" class="ltr" placeholder="1.1.1.1&#10;my.server.com&#10;IPv6 addresses supported (with or without brackets)"></textarea><div style="margin-top:12px;"><button class="btn btn-primary" id="generateBtn">🚀 Generate Configs</button><button class="btn btn-outline" id="clearIpBtn">🗑️ Clear</button></div></div>
-            <div class="panel"><h2>💾 Presets</h2><div id="presetList" style="max-height:200px;overflow-y:auto;"></div><div style="margin-top:12px;"><button class="btn btn-success" id="savePresetBtn">💾 Save</button><button class="btn btn-danger" id="clearPresetsBtn">🗑️ Clear All</button></div></div>
+
+        <!-- IP List full width -->
+        <div class="panel">
+            <h2 class="english-header">🌍 IP / Domain List</h2>
+            <textarea id="ipList" class="ltr" placeholder="1.1.1.1&#10;my.server.com&#10;IPv6 supported"></textarea>
+            <div style="margin-top:12px;"><button class="btn btn-primary" id="generateBtn">🚀 Generate Configs</button><button class="btn btn-outline" id="clearIpBtn">🗑️ Clear</button></div>
         </div>
+
         <!-- Output -->
         <div class="panel">
-            <h2>📤 Output</h2>
+            <h2 class="english-header">📤 Output</h2>
             <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
                 <button class="btn btn-primary" id="btnJson">📄 JSON</button>
                 <button class="btn btn-primary active" id="btnLink">🔗 Links</button>
                 <button class="btn btn-outline" id="subBtn">📦 Subscription (Base64)</button>
-                <button class="btn btn-outline" id="qrBtn">🔲 QR Code</button>
             </div>
             <div class="output-scroll" id="outputScroll"><div id="outputArea"></div></div>
             <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
@@ -181,13 +382,14 @@
 </div>
 <div class="footer">
     از طرف <a id="sulgx-link" href="https://github.com/SulgX" target="_blank">SulgX</a> برای مردم ایران
-    <a id="readme-link" href="https://github.com/SulgX/ConfigGenerator" target="_blank">📖 README</a>- V 1.0
+    <a id="readme-link" href="https://github.com/SulgX/ConfigGenerator" target="_blank">📖 README</a>
 </div>
-<div id="qrModal" class="qr-modal"><div class="modal-content"><canvas id="qrCanvas"></canvas><br><button class="btn btn-primary" id="closeQrBtn">Close</button><button class="btn btn-outline" id="retryQrBtn" style="display:none;">Retry</button></div></div>
+<div id="qrModal" class="qr-modal"><div class="modal-content"><canvas id="qrCanvas"></canvas><br><button class="btn btn-primary" id="closeQrBtn">Close</button></div></div>
 <div id="notification" class="notification" style="display:none;"></div>
 
 <script>
 (function() {
+    // ==================== STATE ====================
     let currentProtocol = 'vless';
     let outputMode = 'link';
     let generatedConfigs = [];
@@ -196,9 +398,10 @@
     let pingCancelFlag = false;
     let pingInProgress = false;
     let qrLoaded = false;
+    let globalConfigIndex = 0; // for unique numbering
 
-    let presets = {};
-    try { presets = JSON.parse(localStorage.getItem('vpPresets') || '{}'); } catch(e) {}
+    let profiles = [];
+    let currentProfileId = null;
 
     const g = id => document.getElementById(id);
     const val = id => (g(id)?.value || '').trim();
@@ -207,69 +410,49 @@
     const notify = (msg, ok=true) => {
         if(notifTimer) clearTimeout(notifTimer);
         const n = g('notification');
-        n.textContent = msg;
-        n.style.background = ok ? 'var(--green)' : 'var(--red)';
+        n.textContent = msg; n.style.background = ok ? 'var(--green)' : 'var(--red)';
         n.style.display = 'block';
-        notifTimer = setTimeout(() => { n.style.display = 'none'; }, 3000);
+        notifTimer = setTimeout(() => n.style.display = 'none', 3000);
     };
 
-    function uuid() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-            const r = Math.random()*16|0;
-            return (c==='x'?r:(r&0x3|0x8)).toString(16);
-        });
-    }
-    function randomPassword() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
-        let p = ''; for(let i=0;i<32;i++) p += chars[Math.random()*chars.length|0];
-        return p;
+    window.toggleCustomInput = (select, inputId) => {
+        const input = g(inputId);
+        if (input) input.style.display = select.value === 'custom' ? 'block' : 'none';
+    };
+
+    function getEffectiveValue(selectId, customInputId) {
+        const select = g(selectId);
+        return select.value === 'custom' ? val(customInputId) : select.value;
     }
 
-    // IPv6 helpers
-    function isIPv6(addr) {
-        return /^[0-9a-fA-F:]+$/.test(addr) && addr.includes(':');
-    }
-    function formatAddressForURI(addr) {
-        return isIPv6(addr) ? '[' + addr + ']' : addr;
-    }
-    function stripBrackets(addr) {
-        if (addr.startsWith('[') && addr.endsWith(']')) {
-            return addr.slice(1, -1);
+    // Helper to set a custom field (restore on profile load)
+    function restoreCustomField(selectId, customInputId, storedValue, predefinedValues) {
+        const select = g(selectId);
+        const customInput = g(customInputId);
+        if (!select || !customInput) return;
+        if (storedValue && !predefinedValues.includes(storedValue)) {
+            select.value = 'custom';
+            customInput.value = storedValue;
+            customInput.style.display = 'block';
+        } else {
+            // if it matches a predefined option, select it and hide custom
+            if (storedValue && predefinedValues.includes(storedValue)) {
+                select.value = storedValue;
+            } else {
+                select.value = predefinedValues[0] || '';
+            }
+            customInput.style.display = 'none';
         }
-        return addr;
     }
 
-    // Protocol UI
-    function selectProtocol(proto) {
-        currentProtocol = proto;
-        document.querySelectorAll('#protocolSelector button').forEach(b => b.classList.remove('active'));
-        document.querySelector(`#protocolSelector button[data-proto="${proto}"]`).classList.add('active');
-        ['vless','vmess','trojan','ss'].forEach(p => {
-            const el = document.getElementById(p+'Fields');
-            if(el) el.style.display = p===proto ? 'block' : 'none';
-        });
-    }
-    g('protocolSelector').addEventListener('click', e => {
-        if(e.target.tagName === 'BUTTON') selectProtocol(e.target.dataset.proto);
-    });
+    function uuid() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random()*16|0; return (c==='x'?r:(r&0x3|0x8)).toString(16); }); }
+    function randomPassword() { const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?'; let p=''; for(let i=0;i<32;i++) p += chars[Math.random()*chars.length|0]; return p; }
 
-    function updateFieldVisibility() {
-        const net = val('network'), sec = val('security');
-        g('wsFields').style.display = net==='ws' ? 'block' : 'none';
-        g('grpcFields').style.display = net==='grpc' ? 'block' : 'none';
-        g('tlsRealityFields').style.display = (sec==='tls'||sec==='reality') ? 'block' : 'none';
-        g('realityOnlyFields').style.display = sec==='reality' ? 'block' : 'none';
-        g('kcpFields').style.display = net==='kcp' ? 'block' : 'none';
-        g('quicFields').style.display = net==='quic' ? 'block' : 'none';
-        g('h2Fields').style.display = net==='h2' ? 'block' : 'none';
-        g('httpupgradeFields').style.display = net==='httpupgrade' ? 'block' : 'none';
-        g('splithttpFields').style.display = net==='splithttp' ? 'block' : 'none';
-        g('xhttpFields').style.display = net==='xhttp' ? 'block' : 'none';
-    }
-    g('network').addEventListener('change', updateFieldVisibility);
-    g('security').addEventListener('change', updateFieldVisibility);
+    function isIPv6(addr) { return /^[0-9a-fA-F:]+$/.test(addr) && addr.includes(':'); }
+    function formatAddressForURI(addr) { return isIPv6(addr) ? '['+addr+']' : addr; }
+    function stripBrackets(addr) { if(addr.startsWith('[') && addr.endsWith(']')) return addr.slice(1,-1); return addr; }
 
-    // Parsing with IPv6 support
+    // ==================== PARSING ====================
     function parseCustomScheme(link, scheme) {
         const withoutScheme = link.slice(scheme.length + 3);
         const fragmentIndex = withoutScheme.indexOf('#');
@@ -285,19 +468,14 @@
         let host, port;
         if (hostPort.startsWith('[')) {
             const closeBracket = hostPort.indexOf(']');
-            if (closeBracket === -1) throw new Error('Invalid IPv6 address');
+            if (closeBracket === -1) throw new Error('Invalid IPv6');
             host = hostPort.slice(1, closeBracket);
             const afterBracket = hostPort.slice(closeBracket+1);
             port = afterBracket.startsWith(':') ? parseInt(afterBracket.slice(1)) || 443 : 443;
         } else {
             const colonIndex = hostPort.lastIndexOf(':');
-            if (colonIndex !== -1) {
-                host = hostPort.slice(0, colonIndex);
-                port = parseInt(hostPort.slice(colonIndex+1)) || 443;
-            } else {
-                host = hostPort;
-                port = 443;
-            }
+            if (colonIndex !== -1) { host = hostPort.slice(0, colonIndex); port = parseInt(hostPort.slice(colonIndex+1)) || 443; }
+            else { host = hostPort; port = 443; }
         }
         const params = {};
         if(query) {
@@ -318,236 +496,451 @@
 
     function parseVMess(link) {
         const json = JSON.parse(safeAtob(link.slice(8)));
-        return { protocol:'vmess', address: stripBrackets(json.add), port: json.port, uuid: json.id, aid: json.aid || 0, security: json.scy || 'auto', net: json.net || 'tcp', tls: json.tls==='tls'?'tls':'none', sni: json.sni || json.host || '', fp: json.fp || '', alpn: json.alpn || '', path: json.path || '', host: json.host || '', serviceName: json.path || '', remark: json.ps || '' };
+        return {
+            protocol:'vmess', address: stripBrackets(json.add), port: json.port,
+            uuid: json.id, aid: json.aid || 0, security: json.scy || 'auto',
+            net: json.net || 'tcp', tls: json.tls==='tls'?'tls':'none',
+            sni: json.sni || json.host || '', fp: json.fp || '', alpn: json.alpn || '',
+            path: json.path || '', host: json.host || '', serviceName: json.path || '',
+            remark: json.ps || ''
+        };
     }
+
     function parseVLess(link) {
         const parsed = parseCustomScheme(link, 'vless');
         const p = parsed.params;
-        return { protocol:'vless', address: stripBrackets(parsed.host), port: parsed.port, uuid: parsed.userinfo, remark: parsed.fragment, flow: p.flow||'', enc: p.encryption||'none', security: p.security||'none', sni: p.sni||'', fp: p.fp||'', alpn: p.alpn||'', pbk: p.pbk||'', sid: p.sid||'', spx: p.spx||'/', net: p.type||'tcp', path: p.path||'/', host: p.host||'', serviceName: p.serviceName||'', kcpSeed: p.seed||'', kcpHeader: p.headerType||'', kcpCong: p.congestion||'', quicSec: p.quicSecurity||'', quicKey: p.key||'', quicHeader: p.quicHeaderType||'', h2Host: p.host||'', h2Path: p.path||'', httpupgradeHost: p.host||'', httpupgradePath: p.path||'', splithttpHost: p.host||'', splithttpPath: p.path||'', xhttpHost: p.host||'', xhttpPath: p.path||'', xhttpMode: p.mode||'' };
+        return {
+            protocol:'vless', address: stripBrackets(parsed.host), port: parsed.port,
+            uuid: parsed.userinfo, remark: parsed.fragment,
+            flow: p.flow||'', enc: p.encryption||'none',
+            security: p.security||'none', sni: p.sni||'',
+            fp: p.fp||'', alpn: p.alpn||'',
+            pbk: p.pbk||'', sid: p.sid||'', spx: p.spx||'/',
+            net: p.type||'tcp', path: p.path||'/', host: p.host||'',
+            serviceName: p.serviceName||'',
+            kcpSeed: p.seed||'', kcpHeader: p.headerType||'', kcpCong: p.congestion||'',
+            quicSec: p.quicSecurity||'', quicKey: p.key||'', quicHeader: p.quicHeaderType||'',
+            h2Host: p.host||'', h2Path: p.path||'',
+            httpupgradeHost: p.host||'', httpupgradePath: p.path||'',
+            splithttpHost: p.host||'', splithttpPath: p.path||'',
+            xhttpHost: p.host||'', xhttpPath: p.path||'', xhttpMode: p.mode||''
+        };
     }
+
     function parseTrojan(link) {
         const parsed = parseCustomScheme(link, 'trojan');
         const p = parsed.params;
-        return { protocol:'trojan', address: stripBrackets(parsed.host), port: parsed.port, password: parsed.userinfo, remark: parsed.fragment, security: p.security||'tls', sni: p.sni||'', fp: p.fp||'', alpn: p.alpn||'', net: p.type||'tcp', path: p.path||'/', host: p.host||'', serviceName: p.serviceName||'', kcpSeed: p.seed||'', kcpHeader: p.headerType||'', kcpCong: p.congestion||'', quicSec: p.quicSecurity||'', quicKey: p.key||'', quicHeader: p.quicHeaderType||'', h2Host: p.host||'', h2Path: p.path||'', httpupgradeHost: p.host||'', httpupgradePath: p.path||'', splithttpHost: p.host||'', splithttpPath: p.path||'', xhttpHost: p.host||'', xhttpPath: p.path||'', xhttpMode: p.mode||'' };
+        return {
+            protocol:'trojan', address: stripBrackets(parsed.host), port: parsed.port,
+            password: parsed.userinfo, remark: parsed.fragment,
+            security: p.security||'tls', sni: p.sni||'',
+            fp: p.fp||'', alpn: p.alpn||'',
+            net: p.type||'tcp', path: p.path||'/', host: p.host||'',
+            serviceName: p.serviceName||'',
+            kcpSeed: p.seed||'', kcpHeader: p.headerType||'', kcpCong: p.congestion||'',
+            quicSec: p.quicSecurity||'', quicKey: p.key||'', quicHeader: p.quicHeaderType||'',
+            h2Host: p.host||'', h2Path: p.path||'',
+            httpupgradeHost: p.host||'', httpupgradePath: p.path||'',
+            splithttpHost: p.host||'', splithttpPath: p.path||'',
+            xhttpHost: p.host||'', xhttpPath: p.path||'', xhttpMode: p.mode||''
+        };
     }
+
     function parseSS(link) {
         let main = link.slice(5);
         let remark = '';
         const hashIdx = main.indexOf('#');
-        if(hashIdx !== -1) { remark = decodeURIComponent(main.slice(hashIdx+1)); main = main.slice(0, hashIdx); }
+        if (hashIdx !== -1) { remark = decodeURIComponent(main.slice(hashIdx+1)); main = main.slice(0, hashIdx); }
         const atIdx = main.lastIndexOf('@');
         let method, password, addr, port;
-        if(atIdx !== -1) {
+        if (atIdx !== -1) {
             const userinfo = safeAtob(main.slice(0, atIdx));
             const colon = userinfo.indexOf(':');
-            if(colon === -1) throw new Error('Invalid SS userinfo');
+            if (colon === -1) throw new Error('Invalid SS userinfo');
             method = userinfo.slice(0, colon);
             password = userinfo.slice(colon+1);
             const hostPort = main.slice(atIdx+1);
             if (hostPort.startsWith('[')) {
                 const closeBracket = hostPort.indexOf(']');
-                if(closeBracket === -1) throw new Error('Invalid IPv6');
+                if (closeBracket === -1) throw new Error('Invalid IPv6');
                 addr = hostPort.slice(1, closeBracket);
                 const after = hostPort.slice(closeBracket+1);
                 port = after.startsWith(':') ? parseInt(after.slice(1)) : 8388;
             } else {
                 const colonIdx = hostPort.lastIndexOf(':');
-                if(colonIdx !== -1) {
-                    addr = hostPort.slice(0, colonIdx);
-                    port = parseInt(hostPort.slice(colonIdx+1)) || 8388;
-                } else {
-                    addr = hostPort;
-                    port = 8388;
-                }
+                if (colonIdx !== -1) { addr = hostPort.slice(0, colonIdx); port = parseInt(hostPort.slice(colonIdx+1)) || 8388; }
+                else { addr = hostPort; port = 8388; }
             }
         } else {
             const decoded = safeAtob(main);
             const parts = decoded.split('@');
-            if(parts.length !== 2) throw new Error('Legacy SS format error');
+            if (parts.length !== 2) throw new Error('Legacy SS format error');
             const user = parts[0], host = parts[1];
             const colon = user.indexOf(':');
             method = user.slice(0, colon);
             password = user.slice(colon+1);
             const colonIdx = host.lastIndexOf(':');
-            if(colonIdx !== -1) {
-                addr = host.slice(0, colonIdx);
-                port = parseInt(host.slice(colonIdx+1)) || 8388;
-            } else {
-                addr = host; port = 8388;
-            }
+            if (colonIdx !== -1) { addr = host.slice(0, colonIdx); port = parseInt(host.slice(colonIdx+1)) || 8388; }
+            else { addr = host; port = 8388; }
         }
         return { protocol:'ss', address: stripBrackets(addr), port: parseInt(port), method, password, remark, security:'none', net:'tcp' };
     }
 
-    function applyConfig(cfg) {
-        selectProtocol(cfg.protocol);
-        if(cfg.port) setVal('port', cfg.port);
-        if(cfg.remark) setVal('serverBaseName', cfg.remark);
-        if(cfg.security) setVal('security', cfg.security);
-        if(cfg.sni) setVal('sni', cfg.sni);
-        if(cfg.fp) setVal('fingerprint', cfg.fp);
-        if(cfg.alpn) setVal('alpn', cfg.alpn);
-        if(cfg.pbk) setVal('publicKey', cfg.pbk);
-        if(cfg.sid) setVal('shortId', cfg.sid);
-        if(cfg.spx) setVal('spiderX', cfg.spx);
-        if(cfg.net) setVal('network', cfg.net);
-        const net = cfg.net || 'tcp';
-        if(net === 'ws') { if(cfg.path) setVal('wsPath', cfg.path); if(cfg.host) setVal('wsHost', cfg.host); }
-        else if(net === 'grpc') { if(cfg.serviceName) setVal('grpcServiceName', cfg.serviceName); }
-        else if(net === 'h2') { if(cfg.h2Host||cfg.host) setVal('h2Host', cfg.h2Host||cfg.host); if(cfg.h2Path||cfg.path) setVal('h2Path', cfg.h2Path||cfg.path||'/'); }
-        else if(net === 'httpupgrade') { if(cfg.httpupgradeHost||cfg.host) setVal('httpupgradeHost', cfg.httpupgradeHost||cfg.host); if(cfg.httpupgradePath||cfg.path) setVal('httpupgradePath', cfg.httpupgradePath||cfg.path||'/'); }
-        else if(net === 'splithttp') { if(cfg.splithttpHost||cfg.host) setVal('splithttpHost', cfg.splithttpHost||cfg.host); if(cfg.splithttpPath||cfg.path) setVal('splithttpPath', cfg.splithttpPath||cfg.path||'/'); }
-        else if(net === 'xhttp') { if(cfg.xhttpHost||cfg.host) setVal('xhttpHost', cfg.xhttpHost||cfg.host); if(cfg.xhttpPath||cfg.path) setVal('xhttpPath', cfg.xhttpPath||cfg.path||'/'); if(cfg.xhttpMode) setVal('xhttpMode', cfg.xhttpMode); }
-        if(cfg.kcpSeed) setVal('kcpSeed', cfg.kcpSeed); if(cfg.kcpHeader) setVal('kcpHeaderType', cfg.kcpHeader); if(cfg.kcpCong) setVal('kcpCongestion', cfg.kcpCong);
-        if(cfg.quicSec) setVal('quicSecurity', cfg.quicSec); if(cfg.quicKey) setVal('quicKey', cfg.quicKey); if(cfg.quicHeader) setVal('quicHeaderType', cfg.quicHeader);
-        if(cfg.protocol==='vless') { if(cfg.uuid) setVal('vlessUuid', cfg.uuid); if(cfg.flow) setVal('vlessFlow', cfg.flow); if(cfg.enc) setVal('vlessEncryption', cfg.enc); }
-        else if(cfg.protocol==='vmess') { if(cfg.uuid) setVal('vmessUuid', cfg.uuid); if(cfg.security) setVal('vmessSecurity', cfg.security); if(cfg.aid !== undefined) setVal('vmessAlterId', cfg.aid); }
-        else if(cfg.protocol==='trojan') { if(cfg.password) setVal('trojanPassword', cfg.password); }
-        else if(cfg.protocol==='ss') { if(cfg.method) setVal('ssMethod', cfg.method); if(cfg.password) setVal('ssPassword', cfg.password); }
+    // ==================== PROFILE MANAGEMENT ====================
+    function createProfileFromCurrentForm(overrides = {}) {
+        return {
+            id: overrides.id || Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+            protocol: overrides.protocol || currentProtocol,
+            baseName: overrides.baseName || val('serverBaseName') || 'Config',
+            address: overrides.address || '',
+            port: overrides.port || '443',
+            network: overrides.network || val('network'),
+            security: overrides.security || val('security'),
+            sni: overrides.sni || val('sni'),
+            fingerprint: overrides.fingerprint || getEffectiveValue('fingerprint','fingerprintCustom'),
+            alpn: overrides.alpn || getEffectiveValue('alpn','alpnCustom'),
+            publicKey: overrides.publicKey || val('publicKey'),
+            shortId: overrides.shortId || val('shortId'),
+            spiderX: overrides.spiderX || val('spiderX'),
+            wsPath: overrides.wsPath || val('wsPath'),
+            wsHost: overrides.wsHost || val('wsHost'),
+            grpcServiceName: overrides.grpcServiceName || val('grpcServiceName'),
+            grpcMultiMode: overrides.grpcMultiMode || val('grpcMultiMode'),
+            kcpSeed: overrides.kcpSeed || val('kcpSeed'),
+            kcpHeaderType: overrides.kcpHeaderType || val('kcpHeaderType'),
+            kcpCongestion: overrides.kcpCongestion || val('kcpCongestion'),
+            quicSecurity: overrides.quicSecurity || val('quicSecurity'),
+            quicKey: overrides.quicKey || val('quicKey'),
+            quicHeaderType: overrides.quicHeaderType || val('quicHeaderType'),
+            h2Host: overrides.h2Host || val('h2Host'),
+            h2Path: overrides.h2Path || val('h2Path'),
+            httpupgradeHost: overrides.httpupgradeHost || val('httpupgradeHost'),
+            httpupgradePath: overrides.httpupgradePath || val('httpupgradePath'),
+            splithttpHost: overrides.splithttpHost || val('splithttpHost'),
+            splithttpPath: overrides.splithttpPath || val('splithttpPath'),
+            xhttpHost: overrides.xhttpHost || val('xhttpHost'),
+            xhttpPath: overrides.xhttpPath || val('xhttpPath'),
+            xhttpMode: overrides.xhttpMode || val('xhttpMode'),
+            muxEnabled: overrides.muxEnabled || val('muxEnabled'),
+            muxConcurrency: overrides.muxConcurrency || val('muxConcurrency'),
+            allowInsecure: overrides.allowInsecure || g('allowInsecure').checked,
+            vlessUuid: overrides.vlessUuid || uuid(),
+            vlessFlow: overrides.vlessFlow || getEffectiveValue('vlessFlow','vlessFlowCustom'),
+            vlessEncryption: overrides.vlessEncryption || getEffectiveValue('vlessEncryption','vlessEncryptionCustom'),
+            vmessUuid: overrides.vmessUuid || uuid(),
+            vmessSecurity: overrides.vmessSecurity || val('vmessSecurity') || 'auto',
+            vmessAlterId: overrides.vmessAlterId || val('vmessAlterId') || '0',
+            trojanPassword: overrides.trojanPassword || randomPassword(),
+            ssMethod: overrides.ssMethod || getEffectiveValue('ssMethod','ssMethodCustom') || 'aes-256-gcm',
+            ssPassword: overrides.ssPassword || randomPassword(),
+        };
+    }
+
+    function loadProfileIntoForm(profile) {
+        if (!profile) return;
+        currentProfileId = profile.id;
+        selectProtocol(profile.protocol);
+        setVal('serverBaseName', profile.baseName);
+        setVal('network', profile.network);
+        setVal('security', profile.security);
+        setVal('sni', profile.sni);
+        // Restore fingerprint with custom handling
+        const fpPredef = ['chrome','firefox','safari','ios','android','edge','random','randomized'];
+        restoreCustomField('fingerprint', 'fingerprintCustom', profile.fingerprint, fpPredef);
+        // ALPN
+        const alpnPredef = ['h2,http/1.1','h2','http/1.1','h3','h3,h2','h3,h2,http/1.1','h3,http/1.1'];
+        restoreCustomField('alpn', 'alpnCustom', profile.alpn, alpnPredef);
+        setVal('publicKey', profile.publicKey);
+        setVal('shortId', profile.shortId);
+        setVal('spiderX', profile.spiderX);
+        setVal('wsPath', profile.wsPath);
+        setVal('wsHost', profile.wsHost);
+        setVal('grpcServiceName', profile.grpcServiceName);
+        setVal('grpcMultiMode', profile.grpcMultiMode);
+        setVal('kcpSeed', profile.kcpSeed);
+        setVal('kcpHeaderType', profile.kcpHeaderType);
+        setVal('kcpCongestion', profile.kcpCongestion);
+        setVal('quicSecurity', profile.quicSecurity);
+        setVal('quicKey', profile.quicKey);
+        setVal('quicHeaderType', profile.quicHeaderType);
+        setVal('h2Host', profile.h2Host);
+        setVal('h2Path', profile.h2Path);
+        setVal('httpupgradeHost', profile.httpupgradeHost);
+        setVal('httpupgradePath', profile.httpupgradePath);
+        setVal('splithttpHost', profile.splithttpHost);
+        setVal('splithttpPath', profile.splithttpPath);
+        setVal('xhttpHost', profile.xhttpHost);
+        setVal('xhttpPath', profile.xhttpPath);
+        setVal('xhttpMode', profile.xhttpMode);
+        setVal('muxEnabled', profile.muxEnabled);
+        setVal('muxConcurrency', profile.muxConcurrency);
+        g('allowInsecure').checked = profile.allowInsecure || false;
+        // Always show "Auto Fill"
+        setVal('vlessUuid', 'Auto Fill');
+        setVal('vmessUuid', 'Auto Fill');
+        setVal('trojanPassword', 'Auto Fill');
+        setVal('ssPassword', 'Auto Fill');
+        // Restore custom flows/encryption/method
+        const flowPredef = ['','xtls-rprx-vision','xtls-rprx-vision-udp443','xtls-rprx-origin','xtls-rprx-direct'];
+        restoreCustomField('vlessFlow', 'vlessFlowCustom', profile.vlessFlow, flowPredef);
+        const encPredef = ['none','aes-128-gcm','chacha20-poly1305'];
+        restoreCustomField('vlessEncryption', 'vlessEncryptionCustom', profile.vlessEncryption, encPredef);
+        setVal('vmessSecurity', profile.vmessSecurity);
+        setVal('vmessAlterId', profile.vmessAlterId);
+        const ssMethodPredef = ['aes-256-gcm','aes-128-gcm','chacha20-ietf-poly1305','2022-blake3-aes-256-gcm','2022-blake3-aes-128-gcm','2022-blake3-chacha20-poly1305'];
+        restoreCustomField('ssMethod', 'ssMethodCustom', profile.ssMethod, ssMethodPredef);
+        if (profile.port) {
+            ensurePortButton(profile.port, false); // not removable by default
+            selectPortButton(profile.port);
+        }
         updateFieldVisibility();
     }
 
+    function ensurePortButton(port, removable = true) {
+        if (!port) return;
+        const exists = document.querySelector(`.port-btn[data-port="${port}"]`);
+        if (exists) return;
+        const btn = document.createElement('button');
+        btn.className = 'port-btn';
+        if (removable) btn.classList.add('removable');
+        btn.dataset.port = port;
+        btn.textContent = port;
+        if (removable) {
+            const removeBtn = document.createElement('span');
+            removeBtn.className = 'remove-port';
+            removeBtn.textContent = '×';
+            removeBtn.addEventListener('click', (e) => { e.stopPropagation(); btn.remove(); });
+            btn.appendChild(removeBtn);
+        }
+        btn.addEventListener('click', () => btn.classList.toggle('selected'));
+        const container = g('portButtons');
+        const allBtns = Array.from(container.querySelectorAll('.port-btn'));
+        const newPortNum = parseInt(port);
+        let inserted = false;
+        for (let i = 0; i < allBtns.length; i++) {
+            if (newPortNum < parseInt(allBtns[i].dataset.port)) {
+                container.insertBefore(btn, allBtns[i]);
+                inserted = true;
+                break;
+            }
+        }
+        if (!inserted) container.appendChild(btn);
+    }
+
+    function selectPortButton(port) {
+        document.querySelectorAll('.port-btn').forEach(b => b.classList.remove('selected'));
+        const btn = document.querySelector(`.port-btn[data-port="${port}"]`);
+        if (btn) btn.classList.add('selected');
+    }
+
+    function getSelectedPorts() {
+        const selected = Array.from(document.querySelectorAll('.port-btn.selected')).map(b => b.dataset.port);
+        const custom = val('customPortInput');
+        if (custom && !isNaN(custom) && custom > 0 && custom < 65536 && !selected.includes(custom)) selected.push(custom);
+        return selected.length ? selected : ['443'];
+    }
+
+    function saveCurrentAsProfile() {
+        const ports = getSelectedPorts();
+        const profile = createProfileFromCurrentForm({ port: ports[0] });
+        if (currentProfileId) {
+            const idx = profiles.findIndex(p => p.id === currentProfileId);
+            if (idx !== -1) { profiles[idx] = profile; notify('Profile updated'); }
+            else { profiles.push(profile); currentProfileId = profile.id; notify('Profile saved'); }
+        } else {
+            profiles.push(profile); currentProfileId = profile.id;
+            notify('New profile created');
+        }
+        renderProfileTable();
+        try { localStorage.setItem('vpProfiles', JSON.stringify(profiles)); } catch(e) {}
+    }
+
+    function renderProfileTable() {
+        const tbody = g('profileTableBody');
+        const noMsg = g('noProfilesMsg');
+        if (!profiles.length) { tbody.innerHTML = ''; noMsg.style.display = 'block'; return; }
+        noMsg.style.display = 'none';
+        tbody.innerHTML = profiles.map(p => `
+            <tr data-id="${p.id}" class="${p.id === currentProfileId ? 'active-profile-row' : ''}">
+                <td>${p.baseName}</td><td>${p.protocol.toUpperCase()}</td>
+                <td>${p.address || '—'}</td><td>${p.port || '443'}</td><td>${p.network}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary edit-profile-btn" data-id="${p.id}">✏️</button>
+                    <button class="btn btn-sm btn-danger del-profile-btn" data-id="${p.id}">🗑️</button>
+                </td>
+            </tr>`).join('');
+        tbody.querySelectorAll('.edit-profile-btn').forEach(b => b.addEventListener('click', e => {
+            const prof = profiles.find(p => p.id === e.target.dataset.id);
+            if (prof) {
+                loadProfileIntoForm(prof);
+                renderProfileTable();  // refresh highlight
+            }
+        }));
+        tbody.querySelectorAll('.del-profile-btn').forEach(b => b.addEventListener('click', e => {
+            const id = e.target.dataset.id;
+            profiles = profiles.filter(p => p.id !== id);
+            if (currentProfileId === id) currentProfileId = null;
+            try { localStorage.setItem('vpProfiles', JSON.stringify(profiles)); } catch(e) {}
+            renderProfileTable(); notify('Profile deleted');
+        }));
+    }
+
+    function loadProfilesFromStorage() {
+        try { const saved = localStorage.getItem('vpProfiles'); if (saved) profiles = JSON.parse(saved); } catch(e) {}
+        if (profiles.length) loadProfileIntoForm(profiles[0]);
+        else {
+            const def = createProfileFromCurrentForm({ id: Date.now().toString(36) });
+            profiles.push(def); currentProfileId = def.id;
+            loadProfileIntoForm(def);
+        }
+        renderProfileTable();
+    }
+
+    function addNewProfile() {
+        const prof = createProfileFromCurrentForm({ id: null });
+        profiles.push(prof); currentProfileId = prof.id;
+        loadProfileIntoForm(prof);
+        try { localStorage.setItem('vpProfiles', JSON.stringify(profiles)); } catch(e) {}
+        renderProfileTable(); notify('New profile added');
+    }
+
+    // ==================== IMPORT ====================
     function importLinks() {
         const raw = val('importLink');
-        if(!raw) return notify('No link entered', false);
+        if (!raw) return notify('No link entered', false);
         const lines = raw.split('\n').filter(l => l.trim());
-        if(!lines.length) return notify('Empty lines', false);
-        try {
-            const first = lines[0].trim();
-            let cfg;
-            if(first.startsWith('vmess://')) cfg = parseVMess(first);
-            else if(first.startsWith('vless://')) cfg = parseVLess(first);
-            else if(first.startsWith('trojan://')) cfg = parseTrojan(first);
-            else if(first.startsWith('ss://')) cfg = parseSS(first);
-            else throw new Error('Unknown protocol');
-            applyConfig(cfg);
-            const ips = [];
-            for(const line of lines) {
-                const l = line.trim();
-                let addr = '';
-                if(l.startsWith('vmess://')) addr = stripBrackets(JSON.parse(safeAtob(l.slice(8))).add);
-                else if(l.startsWith('vless://') || l.startsWith('trojan://')) {
-                    const parsed = parseCustomScheme(l, l.startsWith('vless://')?'vless':'trojan');
-                    addr = stripBrackets(parsed.host);
-                } else if(l.startsWith('ss://')) {
-                    const main = l.slice(5);
-                    const at = main.lastIndexOf('@');
-                    if(at !== -1) {
-                        const hostPort = main.slice(at+1);
-                        if (hostPort.startsWith('[')) {
-                            const cb = hostPort.indexOf(']');
-                            addr = cb !== -1 ? hostPort.slice(1, cb) : hostPort;
-                        } else {
-                            addr = hostPort.split(':')[0];
-                        }
-                    } else {
-                        const dec = safeAtob(main);
-                        const host = dec.split('@')[1] || '';
-                        addr = host.split(':')[0];
-                    }
-                    addr = stripBrackets(addr);
-                }
-                if(addr) ips.push(addr);
-            }
-            g('ipList').value = ips.join('\n');
-            try { localStorage.setItem('ipList', ips.join('\n')); } catch(e) {}
-            notify(`Loaded ${ips.length} IP(s) from ${lines.length} link(s)`);
-        } catch(e) { notify('Parse error: ' + e.message, false); }
-    }
-
-    // Presets (unchanged mapping)
-    const presetKeyMap = {
-        core: 'coreType', net: 'network', sec: 'security',
-        pbk: 'publicKey', sid: 'shortId', spx: 'spiderX',
-        wsPath: 'wsPath', wsHost: 'wsHost',
-        grpcSvc: 'grpcServiceName', grpcMode: 'grpcMultiMode',
-        kcpSeed: 'kcpSeed', kcpHeader: 'kcpHeaderType', kcpCong: 'kcpCongestion',
-        quicSec: 'quicSecurity', quicKey: 'quicKey', quicHeader: 'quicHeaderType',
-        h2Host: 'h2Host', h2Path: 'h2Path',
-        httpupgradeHost: 'httpupgradeHost', httpupgradePath: 'httpupgradePath',
-        splithttpHost: 'splithttpHost', splithttpPath: 'splithttpPath',
-        xhttpHost: 'xhttpHost', xhttpPath: 'xhttpPath', xhttpMode: 'xhttpMode',
-        mux: 'muxEnabled', muxConc: 'muxConcurrency',
-        vlessUuid: 'vlessUuid', vlessFlow: 'vlessFlow', vlessEnc: 'vlessEncryption',
-        vmessUuid: 'vmessUuid', vmessSec: 'vmessSecurity', vmessAid: 'vmessAlterId',
-        trojanPw: 'trojanPassword', ssMethod: 'ssMethod', ssPw: 'ssPassword',
-        baseName: 'serverBaseName'
-    };
-    function renderPresets() {
-        const div = g('presetList');
-        const keys = Object.keys(presets);
-        if(!keys.length) { div.innerHTML = '<p style="opacity:0.6;">No presets saved</p>'; return; }
-        div.innerHTML = keys.map(k => `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border);"><span>📁 ${k}</span><div><button class="btn btn-sm btn-primary load-preset-btn" data-name="${k}">Load</button><button class="btn btn-sm btn-danger del-preset-btn" data-name="${k}">Del</button></div></div>`).join('');
-        div.querySelectorAll('.load-preset-btn').forEach(btn => btn.addEventListener('click', function() { loadPreset(this.dataset.name); }));
-        div.querySelectorAll('.del-preset-btn').forEach(btn => btn.addEventListener('click', function() { deletePreset(this.dataset.name); }));
-    }
-    function savePreset() {
-        const name = prompt('Preset name:', 'MyPreset_' + new Date().toISOString().slice(0,10));
-        if(!name) return;
-        const data = {
-            protocol: currentProtocol,
-            core: val('coreType'), port: val('port'), net: val('network'), sec: val('security'),
-            sni: val('sni'), fp: val('fingerprint'), alpn: val('alpn'),
-            pbk: val('publicKey'), sid: val('shortId'), spx: val('spiderX'),
-            wsPath: val('wsPath'), wsHost: val('wsHost'),
-            grpcSvc: val('grpcServiceName'), grpcMode: val('grpcMultiMode'),
-            kcpSeed: val('kcpSeed'), kcpHeader: val('kcpHeaderType'), kcpCong: val('kcpCongestion'),
-            quicSec: val('quicSecurity'), quicKey: val('quicKey'), quicHeader: val('quicHeaderType'),
-            h2Host: val('h2Host'), h2Path: val('h2Path'),
-            httpupgradeHost: val('httpupgradeHost'), httpupgradePath: val('httpupgradePath'),
-            splithttpHost: val('splithttpHost'), splithttpPath: val('splithttpPath'),
-            xhttpHost: val('xhttpHost'), xhttpPath: val('xhttpPath'), xhttpMode: val('xhttpMode'),
-            mux: val('muxEnabled'), muxConc: val('muxConcurrency'),
-            vlessUuid: val('vlessUuid'), vlessFlow: val('vlessFlow'), vlessEnc: val('vlessEncryption'),
-            vmessUuid: val('vmessUuid'), vmessSec: val('vmessSecurity'), vmessAid: val('vmessAlterId'),
-            trojanPw: val('trojanPassword'), ssMethod: val('ssMethod'), ssPw: val('ssPassword'),
-            baseName: val('serverBaseName')
-        };
-        presets[name] = data;
-        try { localStorage.setItem('vpPresets', JSON.stringify(presets)); } catch(e) {}
-        renderPresets(); notify('Preset saved');
-    }
-    function loadPreset(name) {
-        const d = presets[name];
-        if(!d) return;
-        selectProtocol(d.protocol);
-        Object.entries(d).forEach(([key, value]) => {
-            if(key === 'protocol') return;
-            const elementId = presetKeyMap[key] || key;
-            if(elementId && g(elementId)) g(elementId).value = value;
+        if (!lines.length) return notify('Empty lines', false);
+        let imported = 0;
+        lines.forEach(line => {
+            try {
+                let cfg;
+                if (line.startsWith('vmess://')) cfg = parseVMess(line);
+                else if (line.startsWith('vless://')) cfg = parseVLess(line);
+                else if (line.startsWith('trojan://')) cfg = parseTrojan(line);
+                else if (line.startsWith('ss://')) cfg = parseSS(line);
+                else return;
+                const prof = createProfileFromCurrentForm({
+                    id: null, protocol: cfg.protocol, address: cfg.address,
+                    port: cfg.port.toString(),
+                    baseName: cfg.remark || `${cfg.address} (${cfg.protocol})`,
+                    vlessUuid: cfg.uuid && cfg.protocol === 'vless' ? cfg.uuid : undefined,
+                    vmessUuid: cfg.uuid && cfg.protocol === 'vmess' ? cfg.uuid : undefined,
+                    trojanPassword: cfg.password && cfg.protocol === 'trojan' ? cfg.password : undefined,
+                    ssPassword: cfg.password && cfg.protocol === 'ss' ? cfg.password : undefined,
+                    network: cfg.net || undefined, security: cfg.security || undefined,
+                    sni: cfg.sni || undefined, fingerprint: cfg.fp || undefined,
+                    alpn: cfg.alpn || undefined, publicKey: cfg.pbk || undefined,
+                    shortId: cfg.sid || undefined, spiderX: cfg.spx || undefined,
+                    wsPath: cfg.path || undefined, wsHost: cfg.host || undefined,
+                    grpcServiceName: cfg.serviceName || undefined,
+                });
+                ensurePortButton(prof.port, true); // imported ports are removable
+                profiles.push(prof);
+                imported++;
+            } catch (e) {}
         });
-        updateFieldVisibility(); notify('Preset loaded');
+        if (imported) {
+            if (profiles.length) loadProfileIntoForm(profiles[profiles.length - 1]);
+            try { localStorage.setItem('vpProfiles', JSON.stringify(profiles)); } catch(e) {}
+            renderProfileTable();
+            notify(`Imported ${imported} profile(s)`);
+        } else notify('No valid links found', false);
+        g('importLink').value = '';
     }
-    function deletePreset(name) { delete presets[name]; try { localStorage.setItem('vpPresets', JSON.stringify(presets)); } catch(e) {} renderPresets(); }
-    function clearPresets() { if(confirm('Delete all?')) { presets = {}; try { localStorage.removeItem('vpPresets'); } catch(e) {} renderPresets(); } }
 
-    // Config generation
+    // ==================== UI ====================
+    function selectProtocol(proto) {
+        currentProtocol = proto;
+        document.querySelectorAll('#protocolSelector button').forEach(b => b.classList.remove('active'));
+        document.querySelector(`#protocolSelector button[data-proto="${proto}"]`).classList.add('active');
+        ['vless','vmess','trojan','ss'].forEach(p => { const el = document.getElementById(p+'Fields'); if(el) el.style.display = p===proto?'block':'none'; });
+    }
+    function updateFieldVisibility() {
+        const net = val('network'), sec = val('security');
+        g('wsFields').style.display = net==='ws'?'block':'none';
+        g('grpcFields').style.display = net==='grpc'?'block':'none';
+        g('tlsRealityFields').style.display = (sec==='tls'||sec==='reality')?'block':'none';
+        g('realityOnlyFields').style.display = sec==='reality'?'block':'none';
+        g('kcpFields').style.display = net==='kcp'?'block':'none';
+        g('quicFields').style.display = net==='quic'?'block':'none';
+        g('h2Fields').style.display = net==='h2'?'block':'none';
+        g('httpupgradeFields').style.display = net==='httpupgrade'?'block':'none';
+        g('splithttpFields').style.display = net==='splithttp'?'block':'none';
+        g('xhttpFields').style.display = net==='xhttp'?'block':'none';
+    }
+    g('network').addEventListener('change', updateFieldVisibility);
+    g('security').addEventListener('change', updateFieldVisibility);
+    g('protocolSelector').addEventListener('click', e => { if(e.target.tagName==='BUTTON') selectProtocol(e.target.dataset.proto); });
+
+    // Naming
+    window.toggleNamingCustom = () => {
+        const style = val('namingStyle');
+        g('emojiPicker').style.display = style === 'emoji' ? '' : 'none';
+        g('flagCode').style.display = style === 'flag' ? '' : 'none';
+        updateNamingPreview();
+    };
+    function getConfigName(ip, port) {
+        const base = val('serverBaseName') || 'Config';
+        const style = val('namingStyle');
+        let prefix = '';
+        if (style === 'emoji') prefix = val('emojiSelect') || '🌍';
+        else if (style === 'flag') prefix = val('flagCode') || '🌍';
+        const number = ++globalConfigIndex;
+        return `${base} – ${prefix ? prefix + ' ' : ''}#${number}`;
+    }
+    function updateNamingPreview() {
+        const name = getConfigName('1.2.3.4', '443');
+        g('namingPreview').textContent = 'Preview: ' + name;
+    }
+    g('serverBaseName').addEventListener('input', updateNamingPreview);
+    g('namingStyle').addEventListener('change', updateNamingPreview);
+    g('emojiSelect').addEventListener('change', updateNamingPreview);
+    g('flagCode').addEventListener('input', updateNamingPreview);
+
+    // ==================== GENERATION ====================
+    function getProfileValue(key) {
+        if (!currentProfileId) return '';
+        const prof = profiles.find(p => p.id === currentProfileId);
+        return prof ? prof[key] : '';
+    }
+    function getUUID() {
+        if (currentProtocol === 'vless') return getProfileValue('vlessUuid');
+        if (currentProtocol === 'vmess') return getProfileValue('vmessUuid');
+        return '';
+    }
+    function getPassword() {
+        if (currentProtocol === 'trojan') return getProfileValue('trojanPassword');
+        if (currentProtocol === 'ss') return getProfileValue('ssPassword');
+        return '';
+    }
+
     function buildStreamSettings() {
         const net = val('network'), sec = val('security');
         let stream = { network: net, security: sec };
-        if(sec==='tls') {
-            stream.tlsSettings = { serverName: val('sni'), fingerprint: val('fingerprint'), alpn: val('alpn').replace(/\s/g,'').split(',').filter(Boolean) };
-        } else if(sec==='reality') {
-            stream.realitySettings = { serverName: val('sni'), fingerprint: val('fingerprint'), publicKey: val('publicKey'), shortId: val('shortId'), spiderX: val('spiderX') || '/' };
+        const alpnVal = getEffectiveValue('alpn','alpnCustom');
+        const fpVal = getEffectiveValue('fingerprint','fingerprintCustom');
+        if (sec === 'tls') {
+            stream.tlsSettings = { serverName: val('sni'), fingerprint: fpVal, alpn: alpnVal.replace(/\s/g,'').split(',').filter(Boolean), allowInsecure: g('allowInsecure').checked };
+        } else if (sec === 'reality') {
+            stream.realitySettings = { serverName: val('sni'), fingerprint: fpVal, publicKey: val('publicKey'), shortId: val('shortId'), spiderX: val('spiderX') || '/' };
         }
-        if(net==='ws') stream.wsSettings = { path: val('wsPath')||'/', headers: { Host: val('wsHost') } };
-        else if(net==='grpc') stream.grpcSettings = { serviceName: val('grpcServiceName'), multiMode: val('grpcMultiMode') };
-        else if(net==='kcp') stream.kcpSettings = { seed: val('kcpSeed'), header: { type: val('kcpHeaderType') }, congestion: val('kcpCongestion')==='true' };
-        else if(net==='quic') stream.quicSettings = { security: val('quicSecurity'), key: val('quicKey'), header: { type: val('quicHeaderType') } };
-        else if(net==='h2') stream.httpSettings = { host: val('h2Host'), path: val('h2Path')||'/' };
-        else if(net==='httpupgrade') stream.httpupgradeSettings = { host: val('httpupgradeHost'), path: val('httpupgradePath')||'/' };
-        else if(net==='splithttp') stream.splithttpSettings = { host: val('splithttpHost'), path: val('splithttpPath')||'/' };
-        else if(net==='xhttp') stream.xhttpSettings = { host: val('xhttpHost'), path: val('xhttpPath')||'/', mode: val('xhttpMode') };
+        if (net === 'ws') stream.wsSettings = { path: val('wsPath') || '/', headers: { Host: val('wsHost') } };
+        else if (net === 'grpc') stream.grpcSettings = { serviceName: val('grpcServiceName'), multiMode: val('grpcMultiMode') };
+        else if (net === 'kcp') stream.kcpSettings = { seed: val('kcpSeed'), header: { type: val('kcpHeaderType') }, congestion: val('kcpCongestion') === 'true' };
+        else if (net === 'quic') stream.quicSettings = { security: val('quicSecurity'), key: val('quicKey'), header: { type: val('quicHeaderType') } };
+        else if (net === 'h2') stream.httpSettings = { host: val('h2Host'), path: val('h2Path') || '/' };
+        else if (net === 'httpupgrade') stream.httpupgradeSettings = { host: val('httpupgradeHost'), path: val('httpupgradePath') || '/' };
+        else if (net === 'splithttp') stream.splithttpSettings = { host: val('splithttpHost'), path: val('splithttpPath') || '/' };
+        else if (net === 'xhttp') stream.xhttpSettings = { host: val('xhttpHost'), path: val('xhttpPath') || '/', mode: val('xhttpMode') };
         return stream;
     }
 
-    function buildJSON(server, core) {
+    function buildJSON(server, core, port) {
         let proto = currentProtocol;
-        const port = parseInt(val('port'));
         const stream = buildStreamSettings();
-        const mux = val('muxEnabled')==='true' ? { enabled:true, concurrency: parseInt(val('muxConcurrency'))||8 } : null;
-        if(core==='xray' || core==='v2ray') {
-            const outProto = proto==='ss' ? 'shadowsocks' : proto;
+        const mux = val('muxEnabled') === 'true' ? { enabled: true, concurrency: parseInt(val('muxConcurrency')) || 8 } : null;
+        if (core === 'xray' || core === 'v2ray') {
+            const outProto = proto === 'ss' ? 'shadowsocks' : proto;
             const cfg = {
                 log: { loglevel: "warning" },
                 inbounds: [ { tag: "socks-in", port: 10808, protocol: "socks", settings: { udp: true } }, { tag: "http-in", port: 10809, protocol: "http" } ],
@@ -555,14 +948,16 @@
                 routing: { domainStrategy: "IPIfNonMatch", rules: [ { type: "field", outboundTag: "proxy", network: "tcp,udp" } ] }
             };
             const out = cfg.outbounds[0];
-            if(proto==='vless') out.settings = { vnext: [{ address: server, port, users: [{ id: val('vlessUuid'), encryption: val('vlessEncryption')||'none', flow: val('vlessFlow') }] }] };
-            else if(proto==='vmess') out.settings = { vnext: [{ address: server, port, users: [{ id: val('vmessUuid'), security: val('vmessSecurity'), alterId: parseInt(val('vmessAlterId'))||0 }] }] };
-            else if(proto==='trojan') out.settings = { servers: [{ address: server, port, password: val('trojanPassword') }] };
-            else if(proto==='ss') out.settings = { servers: [{ address: server, port, method: val('ssMethod'), password: val('ssPassword') }] };
+            const flowVal = getEffectiveValue('vlessFlow','vlessFlowCustom');
+            const encVal = getEffectiveValue('vlessEncryption','vlessEncryptionCustom');
+            if (proto === 'vless') out.settings = { vnext: [{ address: server, port, users: [{ id: getUUID(), encryption: encVal, flow: flowVal }] }] };
+            else if (proto === 'vmess') out.settings = { vnext: [{ address: server, port, users: [{ id: getUUID(), security: val('vmessSecurity'), alterId: parseInt(val('vmessAlterId')) || 0 }] }] };
+            else if (proto === 'trojan') out.settings = { servers: [{ address: server, port, password: getPassword() }] };
+            else if (proto === 'ss') out.settings = { servers: [{ address: server, port, method: getEffectiveValue('ssMethod','ssMethodCustom'), password: getPassword() }] };
             out.streamSettings = stream;
-            if(mux) out.mux = mux;
+            if (mux) out.mux = mux;
             return cfg;
-        } else { // sing-box
+        } else {
             const cfg = {
                 log: { level: "warn" },
                 inbounds: [ { type: "mixed", tag: "mixed-in", listen: "127.0.0.1", listen_port: 10808 } ],
@@ -570,46 +965,41 @@
                 route: { rules: [ { outbound: "proxy", network: ["tcp", "udp"] } ] }
             };
             const out = cfg.outbounds[0];
-            if(proto==='vless') { out.uuid = val('vlessUuid'); out.flow = val('vlessFlow'); }
-            else if(proto==='vmess') { out.uuid = val('vmessUuid'); out.security = val('vmessSecurity'); out.alter_id = parseInt(val('vmessAlterId'))||0; }
-            else if(proto==='trojan') out.password = val('trojanPassword');
-            else if(proto==='ss') { out.method = val('ssMethod'); out.password = val('ssPassword'); }
-            if(stream.security!=='none') {
-                out.tls = { enabled: true, server_name: val('sni')||server, utls: { enabled: true, fingerprint: val('fingerprint')||'chrome' } };
-                if(stream.security==='reality') out.tls.reality = { enabled: true, public_key: val('publicKey'), short_id: val('shortId') };
+            if (proto === 'vless') { out.uuid = getUUID(); out.flow = getEffectiveValue('vlessFlow','vlessFlowCustom'); }
+            else if (proto === 'vmess') { out.uuid = getUUID(); out.security = val('vmessSecurity'); out.alter_id = parseInt(val('vmessAlterId')) || 0; }
+            else if (proto === 'trojan') out.password = getPassword();
+            else if (proto === 'ss') { out.method = getEffectiveValue('ssMethod','ssMethodCustom'); out.password = getPassword(); }
+            if (stream.security !== 'none') {
+                out.tls = { enabled: true, server_name: val('sni') || server, utls: { enabled: true, fingerprint: getEffectiveValue('fingerprint','fingerprintCustom') } };
+                if (stream.security === 'reality') out.tls.reality = { enabled: true, public_key: val('publicKey'), short_id: val('shortId') };
+                out.tls.insecure = g('allowInsecure').checked;
             }
-            if(stream.network!=='tcp') {
+            if (stream.network !== 'tcp') {
                 out.transport = { type: stream.network };
-                if(stream.network==='ws') { out.transport.path = val('wsPath'); out.transport.headers = { Host: val('wsHost')||server }; }
-                else if(stream.network==='grpc') out.transport.service_name = val('grpcServiceName');
-                else if(stream.network==='kcp') { out.transport.seed = val('kcpSeed'); out.transport.header = { type: val('kcpHeaderType') }; out.transport.congestion = val('kcpCongestion')==='true'; }
-                else if(stream.network==='quic') { out.transport.security = val('quicSecurity'); out.transport.key = val('quicKey'); out.transport.header = { type: val('quicHeaderType') }; }
-                else if(stream.network==='h2') { out.transport.host = val('h2Host')||server; out.transport.path = val('h2Path'); }
-                else if(stream.network==='httpupgrade') { out.transport.host = val('httpupgradeHost')||server; out.transport.path = val('httpupgradePath'); }
-                else if(stream.network==='splithttp') { out.transport.host = val('splithttpHost')||server; out.transport.path = val('splithttpPath'); }
-                else if(stream.network==='xhttp') { out.transport.host = val('xhttpHost')||server; out.transport.path = val('xhttpPath'); out.transport.mode = val('xhttpMode'); }
+                if (stream.network === 'ws') { out.transport.path = val('wsPath'); out.transport.headers = { Host: val('wsHost') || server }; }
+                else if (stream.network === 'grpc') out.transport.service_name = val('grpcServiceName');
+                else if (stream.network === 'kcp') { out.transport.seed = val('kcpSeed'); out.transport.header = { type: val('kcpHeaderType') }; out.transport.congestion = val('kcpCongestion') === 'true'; }
+                else if (stream.network === 'quic') { out.transport.security = val('quicSecurity'); out.transport.key = val('quicKey'); out.transport.header = { type: val('quicHeaderType') }; }
+                else if (stream.network === 'h2') { out.transport.host = val('h2Host') || server; out.transport.path = val('h2Path'); }
+                else if (stream.network === 'httpupgrade') { out.transport.host = val('httpupgradeHost') || server; out.transport.path = val('httpupgradePath'); }
+                else if (stream.network === 'splithttp') { out.transport.host = val('splithttpHost') || server; out.transport.path = val('splithttpPath'); }
+                else if (stream.network === 'xhttp') { out.transport.host = val('xhttpHost') || server; out.transport.path = val('xhttpPath'); out.transport.mode = val('xhttpMode'); }
             }
-            if(mux) out.multiplex = { enabled: true, protocol: "smux", max_connections: mux.concurrency };
+            if (mux) out.multiplex = { enabled: true, protocol: "smux", max_connections: mux.concurrency };
             return cfg;
         }
     }
 
-    function buildLink(server, index) {
-        const name = encodeURIComponent(`${val('serverBaseName')||'Server'} [${index+1}]`);
-        const port = val('port');
+    function buildLink(server, port, name) {
         const net = val('network'), sec = val('security');
         const params = [];
         if (net !== 'tcp') params.push(`type=${net}`);
         if (sec !== 'none') params.push(`security=${sec}`);
         const sni = val('sni'); if (sni) params.push(`sni=${encodeURIComponent(sni)}`);
-        const fp = val('fingerprint'); if (fp) params.push(`fp=${encodeURIComponent(fp)}`);
-        if (sec === 'tls' || sec === 'reality') {
-            const alpn = val('alpn').replace(/\s/g, '');
-            if (alpn && alpn !== 'h2,http/1.1') params.push(`alpn=${encodeURIComponent(alpn)}`);
-        }
-        if (sec === 'reality') {
-            params.push(`pbk=${encodeURIComponent(val('publicKey'))}`, `sid=${encodeURIComponent(val('shortId'))}`, `spx=${encodeURIComponent(val('spiderX')||'/')}`);
-        }
+        const fp = getEffectiveValue('fingerprint','fingerprintCustom'); if (fp) params.push(`fp=${encodeURIComponent(fp)}`);
+        const alpn = getEffectiveValue('alpn','alpnCustom').replace(/\s/g, '');
+        if ((sec === 'tls' || sec === 'reality') && alpn && alpn !== 'h2,http/1.1') params.push(`alpn=${encodeURIComponent(alpn)}`);
+        if (sec === 'reality') params.push(`pbk=${encodeURIComponent(val('publicKey'))}`, `sid=${encodeURIComponent(val('shortId'))}`, `spx=${encodeURIComponent(val('spiderX') || '/')}`);
         if (net === 'ws') { params.push(`path=${encodeURIComponent(val('wsPath'))}`, `host=${encodeURIComponent(val('wsHost'))}`); }
         else if (net === 'grpc') { params.push(`serviceName=${encodeURIComponent(val('grpcServiceName'))}`, `mode=${val('grpcMultiMode')}`); }
         else if (net === 'kcp') { if (val('kcpSeed')) params.push(`seed=${encodeURIComponent(val('kcpSeed'))}`); params.push(`headerType=${val('kcpHeaderType')}`, `congestion=${val('kcpCongestion')}`); }
@@ -620,29 +1010,30 @@
         else if (net === 'xhttp') { params.push(`host=${encodeURIComponent(val('xhttpHost'))}`, `path=${encodeURIComponent(val('xhttpPath'))}`, `mode=${val('xhttpMode')}`); }
 
         const formattedAddr = formatAddressForURI(server);
+        const finalName = encodeURIComponent(name);
 
         switch (currentProtocol) {
             case 'vmess': {
-                const cfg = { v: "2", ps: decodeURIComponent(name), add: server, port, id: val('vmessUuid'), aid: val('vmessAlterId')||0, scy: val('vmessSecurity')||'auto', net, type: (sec==='tls'||sec==='reality')?'tls':'none', host: val('wsHost')||'', path: net==='grpc'?val('grpcServiceName'):(val('wsPath')||''), tls: sec==='tls'?'tls':'', sni, alpn: val('alpn'), fp };
+                const cfg = { v: "2", ps: name, add: server, port, id: getUUID(), aid: val('vmessAlterId') || 0, scy: val('vmessSecurity') || 'auto', net, type: (sec === 'tls' || sec === 'reality') ? 'tls' : 'none', host: val('wsHost') || '', path: net === 'grpc' ? val('grpcServiceName') : (val('wsPath') || ''), tls: sec === 'tls' ? 'tls' : '', sni, alpn: getEffectiveValue('alpn','alpnCustom'), fp };
                 const str = JSON.stringify(cfg);
                 const encoder = new TextEncoder(); const bytes = encoder.encode(str);
                 let binary = ''; bytes.forEach(b => binary += String.fromCharCode(b));
                 return 'vmess://' + btoa(binary);
             }
             case 'vless': {
-                const finalParams = [`encryption=${val('vlessEncryption')||'none'}`];
-                const flowVal = val('vlessFlow');
+                const finalParams = [`encryption=${getEffectiveValue('vlessEncryption','vlessEncryptionCustom')}`];
+                const flowVal = getEffectiveValue('vlessFlow','vlessFlowCustom');
                 if (flowVal && net === 'tcp' && sec !== 'none') finalParams.push(`flow=${encodeURIComponent(flowVal)}`);
                 finalParams.push(...params);
                 const queryStr = finalParams.length ? '?' + finalParams.join('&') : '';
-                return `vless://${val('vlessUuid')}@${formattedAddr}:${port}${queryStr}#${name}`;
+                return `vless://${getUUID()}@${formattedAddr}:${port}${queryStr}#${finalName}`;
             }
             case 'trojan': {
                 const queryStr = params.length ? '?' + params.join('&') : '';
-                return `trojan://${val('trojanPassword')}@${formattedAddr}:${port}${queryStr}#${name}`;
+                return `trojan://${getPassword()}@${formattedAddr}:${port}${queryStr}#${finalName}`;
             }
             case 'ss': {
-                const userinfo = btoa(`${val('ssMethod')}:${val('ssPassword')}`);
+                const userinfo = btoa(`${getEffectiveValue('ssMethod','ssMethodCustom')}:${getPassword()}`);
                 let url = `ss://${userinfo}@${formattedAddr}:${port}`;
                 if (net !== 'tcp' || sec !== 'none') {
                     let plugin = '';
@@ -651,102 +1042,89 @@
                     else if (net === 'grpc') { plugin += `mode=grpc;serviceName=${val('grpcServiceName')};`; }
                     if (plugin) url += '?plugin=' + encodeURIComponent(plugin.replace(/;$/, ''));
                 }
-                return url + '#' + name;
+                return url + '#' + finalName;
             }
         }
     }
 
-    function validateInputs() {
-        if(!val('ipList')) { notify('Enter IPs', false); return false; }
-        const port = parseInt(val('port'));
-        if(isNaN(port) || port<1 || port>65535) { notify('Invalid port', false); return false; }
-        if(currentProtocol === 'vless' && !val('vlessUuid')) { notify('UUID required for VLESS', false); return false; }
-        if(currentProtocol === 'vmess' && !val('vmessUuid')) { notify('UUID required for VMess', false); return false; }
-        if(currentProtocol === 'trojan' && !val('trojanPassword')) { notify('Password required for Trojan', false); return false; }
-        if(currentProtocol === 'ss' && (!val('ssMethod')||!val('ssPassword'))) { notify('Method & password required for SS', false); return false; }
-        return true;
-    }
-
     function generateConfigs() {
-        if(!validateInputs()) return;
-        const rawList = val('ipList').split('\n').map(s=>s.trim()).filter(s=>s);
-        const list = rawList.map(stripBrackets); // ensure no brackets in internal address
+        const ips = val('ipList').split('\n').map(s => s.trim()).filter(s => s).map(stripBrackets);
+        if (!ips.length) { notify('Enter at least one IP', false); return; }
+        if (!currentProfileId) { notify('No profile selected', false); return; }
+        const ports = getSelectedPorts();
         const core = val('coreType');
-        generatedConfigs = list.map((server, idx) => ({
-            name: `${val('serverBaseName')||'Server'} [${idx+1}]`,
-            json: buildJSON(server, core),
-            link: buildLink(server, idx)
-        }));
+        generatedConfigs = [];
+        globalConfigIndex = 0; // reset for fresh naming
+        ips.forEach((server) => {
+            ports.forEach(port => {
+                const name = getConfigName(server, port);
+                const json = buildJSON(server, core, parseInt(port));
+                const link = buildLink(server, parseInt(port), name);
+                generatedConfigs.push({ name, json, link });
+            });
+        });
         renderOutput();
         notify(`${generatedConfigs.length} configs generated`);
     }
 
-    // Output, ping, etc.
-    function switchOutput(mode) {
-        outputMode = mode;
-        g('btnJson').classList.toggle('active', mode==='json');
-        g('btnLink').classList.toggle('active', mode==='link');
-        renderOutput();
-    }
-
+    // ==================== OUTPUT ====================
+    function switchOutput(mode) { outputMode = mode; g('btnJson').classList.toggle('active', mode === 'json'); g('btnLink').classList.toggle('active', mode === 'link'); renderOutput(); }
     function renderOutput() {
         const div = g('outputArea');
-        if(!generatedConfigs.length) { div.innerHTML = '<p style="opacity:0.6;">No configs</p>'; return; }
-        if(outputMode==='json') {
-            div.innerHTML = generatedConfigs.map((c,i) => `<div class="config-card"><h4>📄 ${c.name}</h4><div class="actions"><button class="btn btn-sm btn-primary copy-json-btn" data-idx="${i}">Copy</button></div><pre>${JSON.stringify(c.json, null, 2)}</pre></div>`).join('');
+        if (!generatedConfigs.length) { div.innerHTML = '<p style="opacity:0.6;">No configs</p>'; return; }
+        if (outputMode === 'json') {
+            div.innerHTML = generatedConfigs.map((c, i) => `<div class="config-card"><h4>📄 ${c.name}</h4><div class="actions"><button class="btn btn-sm btn-primary copy-json-btn" data-idx="${i}">Copy</button></div><pre>${JSON.stringify(c.json, null, 2)}</pre></div>`).join('');
             div.querySelectorAll('.copy-json-btn').forEach(b => b.addEventListener('click', function() { copyJson(parseInt(this.dataset.idx)); }));
         } else {
-            div.innerHTML = generatedConfigs.map((c,i) => `<div class="config-card"><h4>🔗 ${c.name}</h4><div class="actions"><button class="btn btn-sm btn-primary copy-link-btn" data-idx="${i}">Copy</button></div><pre>${c.link}</pre></div>`).join('');
+            div.innerHTML = generatedConfigs.map((c, i) => `<div class="config-card"><h4>🔗 ${c.name}</h4><div class="actions"><button class="btn btn-sm btn-primary copy-link-btn" data-idx="${i}">Copy</button> <button class="btn btn-sm btn-outline qr-single-btn" data-idx="${i}">📱 QR</button></div><pre>${c.link}</pre></div>`).join('');
             div.querySelectorAll('.copy-link-btn').forEach(b => b.addEventListener('click', function() { copyLink(parseInt(this.dataset.idx)); }));
+            div.querySelectorAll('.qr-single-btn').forEach(b => b.addEventListener('click', function() { showSingleQR(parseInt(this.dataset.idx)); }));
         }
     }
-
-    function copyJson(i) { navigator.clipboard.writeText(JSON.stringify(generatedConfigs[i].json, null, 2)).then(()=>notify('Copied')); }
-    function copyLink(i) { navigator.clipboard.writeText(generatedConfigs[i].link).then(()=>notify('Copied')); }
+    function copyJson(i) { navigator.clipboard.writeText(JSON.stringify(generatedConfigs[i].json, null, 2)).then(() => notify('Copied')); }
+    function copyLink(i) { navigator.clipboard.writeText(generatedConfigs[i].link).then(() => notify('Copied')); }
     function copyOutput() {
-        if(!generatedConfigs.length) return;
-        const text = outputMode==='json' ? generatedConfigs.map(c => JSON.stringify(c.json, null, 2)).join('\n\n') : generatedConfigs.map(c => c.link).join('\n');
+        if (!generatedConfigs.length) return;
+        const text = outputMode === 'json' ? generatedConfigs.map(c => JSON.stringify(c.json, null, 2)).join('\n\n') : generatedConfigs.map(c => c.link).join('\n');
         navigator.clipboard.writeText(text).then(() => notify('Copied'));
     }
     function downloadOutput() {
-        if(!generatedConfigs.length) return;
-        const content = outputMode==='json' ? generatedConfigs.map(c => JSON.stringify(c.json, null, 2)).join('\n\n---\n\n') : generatedConfigs.map(c => c.link).join('\n');
-        const blob = new Blob([content], {type:'text/plain'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = outputMode==='json'?'configs.json':'configs.txt';
+        if (!generatedConfigs.length) return;
+        const content = outputMode === 'json' ? generatedConfigs.map(c => JSON.stringify(c.json, null, 2)).join('\n\n---\n\n') : generatedConfigs.map(c => c.link).join('\n');
+        const blob = new Blob([content], { type: 'text/plain' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = outputMode === 'json' ? 'configs.json' : 'configs.txt';
         a.click(); URL.revokeObjectURL(a.href);
         notify('Downloaded');
     }
     function generateSubscription() {
-        if(!generatedConfigs.length) return;
+        if (!generatedConfigs.length) return;
         const base64 = btoa(generatedConfigs.map(c => c.link).join('\n'));
         navigator.clipboard.writeText(base64).then(() => notify('Subscription Base64 copied'));
     }
-    function showQR() {
-        if(!generatedConfigs.length) return;
-        if(!qrLoaded) {
-            g('retryQrBtn').style.display = 'none';
+
+    // QR
+    function showSingleQR(index) { showQRForText(generatedConfigs[index].link); }
+    function showQRForText(text) {
+        if (!qrLoaded) {
             const s = document.createElement('script');
             s.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js';
-            s.onload = () => { qrLoaded = true; showQR(); };
-            s.onerror = () => { qrLoaded = false; g('qrModal').style.display = 'flex'; g('qrCanvas').style.display = 'none'; g('retryQrBtn').style.display = 'inline-block'; notify('Failed to load QR library', false); };
+            s.onload = () => { qrLoaded = true; showQRForText(text); };
             document.head.appendChild(s);
             return;
         }
-        if(typeof QRCode === 'undefined') { notify('QR library unavailable', false); return; }
-        g('retryQrBtn').style.display = 'none'; g('qrCanvas').style.display = 'block';
-        QRCode.toCanvas(g('qrCanvas'), generatedConfigs.map(c => c.link).join('\n'), { width: 300 }, (err) => {
-            if(err) notify('QR error', false);
+        if (typeof QRCode === 'undefined') { notify('QR library unavailable', false); return; }
+        QRCode.toCanvas(g('qrCanvas'), text, { width: 300 }, err => {
+            if (err) notify('QR error', false);
             else g('qrModal').style.display = 'flex';
         });
     }
-    function closeQR() { g('qrModal').style.display = 'none'; qrLoaded = false; g('retryQrBtn').style.display = 'none'; }
-    function retryQR() { qrLoaded = false; showQR(); }
+    function closeQR() { g('qrModal').style.display = 'none'; }
 
-    // Ping (unchanged, works for ws)
+    // Ping (with QR button in table)
     function pingAllConfigs() {
-        if(!generatedConfigs.length) { notify('Generate configs first', false); return; }
-        if(pingInProgress) { notify('Ping already in progress', false); return; }
-        if(val('network')!=='ws') { if(!confirm('Ping works reliably only for WebSocket transport. Continue anyway?')) return; }
+        if (!generatedConfigs.length) { notify('Generate configs first', false); return; }
+        if (pingInProgress) { notify('Ping already in progress', false); return; }
+        if (val('network') !== 'ws') { if (!confirm('Ping works only for WebSocket transport. Continue?')) return; }
         pingInProgress = true; pingCancelFlag = false; pingResultsData = [];
         g('pingPanel').style.display = 'block';
         g('pingProgress').textContent = `0 / ${generatedConfigs.length}`;
@@ -754,11 +1132,10 @@
         g('pingResults').innerHTML = '<p style="opacity:0.6;">Starting ping...</p>';
         runPing(0);
     }
-
     async function runPing(index) {
-        if(pingCancelFlag || index >= generatedConfigs.length) {
+        if (pingCancelFlag || index >= generatedConfigs.length) {
             pingInProgress = false;
-            if(!pingCancelFlag) { sortPingData(); renderPingTable(); }
+            if (!pingCancelFlag) { sortPingData(); renderPingTable(); }
             g('pingProgress').textContent = `${pingResultsData.length} / ${generatedConfigs.length}`;
             g('progressFill').style.width = '100%';
             return;
@@ -767,120 +1144,129 @@
         const latency = await measureLatency(cfg);
         pingResultsData.push({ name: cfg.name, latency, link: cfg.link });
         sortPingData(); renderPingTable(true);
-        const done = pingResultsData.length;
-        g('pingProgress').textContent = `${done} / ${generatedConfigs.length}`;
-        g('progressFill').style.width = (done / generatedConfigs.length * 100) + '%';
-        setTimeout(() => runPing(index+1), 50);
+        g('pingProgress').textContent = `${pingResultsData.length} / ${generatedConfigs.length}`;
+        g('progressFill').style.width = (pingResultsData.length / generatedConfigs.length * 100) + '%';
+        setTimeout(() => runPing(index + 1), 50);
     }
-
-    function cancelPing() { pingCancelFlag = true; pingInProgress = false; notify('Ping cancelled', false); }
-
+    function cancelPing() { pingCancelFlag = true; }
     async function measureLatency(cfg) {
         const json = cfg.json;
         let server, port, tls, sni, wsPath, net;
-        const outbound = json.outbounds?.find(o=>o.tag==='proxy') || json.outbounds?.[0];
-        if(!outbound) return null;
-        if(outbound.settings?.vnext?.[0]?.address) {
+        const outbound = json.outbounds?.find(o => o.tag === 'proxy') || json.outbounds?.[0];
+        if (!outbound) return null;
+        if (outbound.settings?.vnext?.[0]?.address) {
             server = outbound.settings.vnext[0].address; port = outbound.settings.vnext[0].port;
             tls = outbound.streamSettings?.security === 'tls' || outbound.streamSettings?.security === 'reality';
             sni = outbound.streamSettings?.tlsSettings?.serverName || outbound.streamSettings?.realitySettings?.serverName || server;
             net = outbound.streamSettings?.network || 'tcp'; wsPath = outbound.streamSettings?.wsSettings?.path || '';
-        } else if(outbound.settings?.servers?.[0]?.address) {
+        } else if (outbound.settings?.servers?.[0]?.address) {
             server = outbound.settings.servers[0].address; port = outbound.settings.servers[0].port;
             tls = outbound.streamSettings?.security === 'tls' || outbound.streamSettings?.security === 'reality';
             sni = outbound.streamSettings?.tlsSettings?.serverName || outbound.streamSettings?.realitySettings?.serverName || server;
             net = outbound.streamSettings?.network || 'tcp'; wsPath = outbound.streamSettings?.wsSettings?.path || '';
-        } else if(outbound.server) {
+        } else if (outbound.server) {
             server = outbound.server; port = outbound.server_port;
             tls = outbound.tls?.enabled || false; sni = outbound.tls?.server_name || server;
             net = outbound.transport?.type || 'tcp'; wsPath = outbound.transport?.path || '';
         } else return null;
-        if(!server || !port || net !== 'ws') return null;
+        if (!server || !port || net !== 'ws') return null;
         const addr = formatAddressForURI(server);
         const scheme = tls ? 'wss' : 'ws';
-        const wsUrl = `${scheme}://${addr}:${port}${wsPath}`;
+        const wsUrl = `${scheme}://${sni || server}:${port}${wsPath}`;
         try {
             const start = performance.now();
             await new Promise((resolve, reject) => {
                 const ws = new WebSocket(wsUrl);
                 const timeout = setTimeout(() => { ws.close(); reject(new Error('Timeout')); }, 5000);
                 ws.onopen = () => { clearTimeout(timeout); ws.close(); resolve(); };
-                ws.onerror = () => { clearTimeout(timeout); reject(new Error('WS error')); };
-                ws.onclose = (e) => { if(e.wasClean) resolve(); else reject(new Error('Closed')); };
+                ws.onerror = () => { clearTimeout(timeout); reject(new Error('Error')); };
             });
             return Math.round(performance.now() - start);
-        } catch(e) { return null; }
+        } catch (e) { return null; }
     }
-
     function sortPingData() {
         pingResultsData.sort((a, b) => {
-            if(a.latency===null && b.latency===null) return 0;
-            if(a.latency===null) return 1;
-            if(b.latency===null) return -1;
+            if (a.latency === null && b.latency === null) return 0;
+            if (a.latency === null) return 1;
+            if (b.latency === null) return -1;
             return sortDirection === 'asc' ? a.latency - b.latency : b.latency - a.latency;
         });
     }
-
     let pingContainerEl = null;
     function renderPingTable(preserveScroll = false) {
         let scrollTop = 0;
-        if(preserveScroll && pingContainerEl) scrollTop = pingContainerEl.scrollTop;
-        let html = '<div class="ping-container"><table class="ping-table"><thead><tr><th>Config</th><th id="sortLatency" style="cursor:pointer;">Latency ' + (sortDirection==='asc'?'▲':'▼') + '</th><th>Status</th><th>Copy</th></tr></thead><tbody>';
+        if (preserveScroll && pingContainerEl) scrollTop = pingContainerEl.scrollTop;
+        let html = '<div class="ping-container"><table class="ping-table"><thead><tr><th>Config</th><th id="sortLatency" style="cursor:pointer;">Latency ' + (sortDirection === 'asc' ? '▲' : '▼') + '</th><th>Status</th><th>Copy</th><th>QR</th></tr></thead><tbody>';
         pingResultsData.forEach(r => {
-            const best = r.latency !== null && r.latency === Math.min(...pingResultsData.filter(x=>x.latency!==null).map(x=>x.latency)) ? 'best' : '';
-            html += `<tr class="${best}"><td>${r.name}</td><td>${r.latency!==null ? r.latency+' ms' : 'N/A'}</td><td>${r.latency!==null ? '🟢' : '🔴'}</td><td><button class="btn btn-sm btn-primary copy-ping-link-btn" data-link="${encodeURIComponent(r.link)}">Copy</button></td></tr>`;
+            const best = r.latency !== null && r.latency === Math.min(...pingResultsData.filter(x => x.latency !== null).map(x => x.latency)) ? 'best' : '';
+            html += `<tr class="${best}"><td>${r.name}</td><td>${r.latency !== null ? r.latency + ' ms' : 'N/A'}</td><td>${r.latency !== null ? '🟢' : '🔴'}</td><td><button class="btn btn-sm btn-primary copy-ping-link-btn" data-link="${encodeURIComponent(r.link)}">Copy</button></td><td><button class="btn btn-sm btn-outline qr-ping-btn" data-link="${encodeURIComponent(r.link)}">📱 QR</button></td></tr>`;
         });
         html += '</tbody></table></div>';
         g('pingResults').innerHTML = html;
         const sortHeader = g('sortLatency');
-        if(sortHeader) sortHeader.addEventListener('click', togglePingSort);
+        if (sortHeader) sortHeader.addEventListener('click', togglePingSort);
         g('pingResults').querySelectorAll('.copy-ping-link-btn').forEach(b => b.addEventListener('click', function() { copyLinkFromPing(this.dataset.link); }));
+        g('pingResults').querySelectorAll('.qr-ping-btn').forEach(b => b.addEventListener('click', function() { showQRForText(decodeURIComponent(this.dataset.link)); }));
         pingContainerEl = document.querySelector('.ping-container');
-        if(preserveScroll && pingContainerEl) pingContainerEl.scrollTop = scrollTop;
+        if (preserveScroll && pingContainerEl) pingContainerEl.scrollTop = scrollTop;
     }
-
-    function togglePingSort() {
-        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-        sortPingData(); renderPingTable();
-    }
-
+    function togglePingSort() { sortDirection = sortDirection === 'asc' ? 'desc' : 'asc'; sortPingData(); renderPingTable(); }
     function copyLinkFromPing(encoded) { navigator.clipboard.writeText(decodeURIComponent(encoded)).then(() => notify('Link copied')); }
 
-    function clearIPs() { g('ipList').value = ''; try { localStorage.removeItem('ipList'); } catch(e) {} }
+    function clearIPs() { g('ipList').value = ''; try { localStorage.removeItem('ipList'); } catch (e) {} }
 
-    // Event listeners
-    function setupListeners() {
+    // ==================== INIT ====================
+    document.addEventListener('DOMContentLoaded', () => {
+        // Initial port buttons (non-removable)
+        const defaultPorts = ['443','80','2083','2096','8080','8880','2053','8443'];
+        defaultPorts.forEach(p => ensurePortButton(p, false));
+        selectPortButton('443');
+
+        loadProfilesFromStorage();
+
+        // Theme toggle
+        const themeToggle = g('themeToggle');
+        const body = document.body;
+        const updateThemeIcon = () => { themeToggle.textContent = body.classList.contains('light') ? '☀️' : '🌙'; };
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light');
+            localStorage.setItem('theme', body.classList.contains('light') ? 'light' : 'dark');
+            updateThemeIcon();
+        });
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') body.classList.add('light'); else body.classList.remove('light');
+        updateThemeIcon();
+
+        // Event listeners
         g('importBtn').addEventListener('click', importLinks);
-        g('clearImportBtn').addEventListener('click', () => { g('importLink').value = ''; });
-        g('genVlessUuid').addEventListener('click', () => { setVal('vlessUuid', uuid()); notify('UUID generated'); });
-        g('genVmessUuid').addEventListener('click', () => { setVal('vmessUuid', uuid()); notify('UUID generated'); });
-        g('genTrojanPw').addEventListener('click', () => { setVal('trojanPassword', randomPassword()); notify('Password generated'); });
-        g('genSsPw').addEventListener('click', () => { setVal('ssPassword', randomPassword()); notify('Password generated'); });
+        g('clearImportBtn').addEventListener('click', () => g('importLink').value = '');
+        g('newProfileBtn').addEventListener('click', addNewProfile);
+        g('saveProfileBtn').addEventListener('click', saveCurrentAsProfile);
+        g('deleteAllProfilesBtn').addEventListener('click', () => {
+            if (confirm('Delete all profiles?')) { profiles = []; currentProfileId = null; try { localStorage.removeItem('vpProfiles'); } catch (e) {} renderProfileTable(); notify('All profiles deleted'); }
+        });
         g('generateBtn').addEventListener('click', generateConfigs);
         g('clearIpBtn').addEventListener('click', clearIPs);
-        g('savePresetBtn').addEventListener('click', savePreset);
-        g('clearPresetsBtn').addEventListener('click', clearPresets);
+        g('addCustomPortBtn').addEventListener('click', () => {
+            const custom = val('customPortInput');
+            if (custom && !isNaN(custom) && custom > 0 && custom < 65536) {
+                ensurePortButton(custom, true); // custom ports are removable
+                g('customPortInput').value = '';
+                document.querySelectorAll('.port-btn').forEach(b => b.classList.remove('selected'));
+                const newBtn = document.querySelector(`.port-btn[data-port="${custom}"]`);
+                if (newBtn) newBtn.classList.add('selected');
+            } else notify('Invalid port', false);
+        });
         g('btnJson').addEventListener('click', () => switchOutput('json'));
         g('btnLink').addEventListener('click', () => switchOutput('link'));
         g('subBtn').addEventListener('click', generateSubscription);
-        g('qrBtn').addEventListener('click', showQR);
-        g('closeQrBtn').addEventListener('click', closeQR);
-        g('retryQrBtn').addEventListener('click', retryQR);
         g('copyOutputBtn').addEventListener('click', copyOutput);
         g('downloadOutputBtn').addEventListener('click', downloadOutput);
         g('pingBtn').addEventListener('click', pingAllConfigs);
         g('cancelPingBtn').addEventListener('click', cancelPing);
-    }
+        g('closeQrBtn').addEventListener('click', closeQR);
 
-    document.addEventListener('DOMContentLoaded', () => {
-        setupListeners();
-        renderPresets();
-        updateFieldVisibility();
-        setVal('vlessUuid', uuid());
-        setVal('vmessUuid', uuid());
-        setVal('trojanPassword', randomPassword());
-        setVal('ssPassword', randomPassword());
-        try { const saved = localStorage.getItem('ipList'); if(saved) g('ipList').value = saved; } catch(e) {}
+        toggleNamingCustom();
     });
 })();
 </script>
